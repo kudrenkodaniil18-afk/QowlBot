@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>QOWL World — экономика, игры, рефералы</title>
+    <title>QOWL World — игры и экономика</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         * {
@@ -11,7 +11,6 @@
             padding: 0;
             box-sizing: border-box;
         }
-
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
             background: var(--tg-theme-bg-color, #ffffff);
@@ -19,8 +18,6 @@
             padding: 16px;
             padding-bottom: 80px;
         }
-
-        /* Контейнеры */
         .card {
             background: var(--tg-theme-secondary-bg-color, #f5f5f5);
             border-radius: 24px;
@@ -28,21 +25,17 @@
             margin-bottom: 16px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.05);
         }
-
         .flex-row {
             display: flex;
             align-items: center;
             gap: 12px;
             flex-wrap: wrap;
         }
-
         .space-between {
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
-
-        /* Аватар */
         .avatar {
             width: 64px;
             height: 64px;
@@ -50,8 +43,6 @@
             object-fit: cover;
             border: 2px solid var(--tg-theme-button-color, #2481cc);
         }
-
-        /* Кнопки */
         button {
             background: var(--tg-theme-button-color, #2481cc);
             color: var(--tg-theme-button-text-color, #ffffff);
@@ -66,59 +57,11 @@
         button:active {
             transform: scale(0.96);
         }
-        .secondary-btn {
-            background: var(--tg-theme-hint-color, #aaa);
-        }
-        .danger-btn {
-            background: #e55353;
-        }
-
-        /* Счётчик */
         .balance {
             font-size: 32px;
             font-weight: bold;
             color: var(--tg-theme-button-color, #2481cc);
         }
-
-        /* Прогресс-бар */
-        .progress-bar {
-            background: #ddd;
-            border-radius: 20px;
-            height: 24px;
-            overflow: hidden;
-            margin: 12px 0;
-        }
-        .progress-fill {
-            background: #4caf50;
-            height: 100%;
-            width: 0%;
-            transition: width 0.3s;
-            display: flex;
-            align-items: center;
-            justify-content: flex-end;
-            padding-right: 8px;
-            color: white;
-            font-size: 12px;
-        }
-
-        /* Список рефералов (пагинация) */
-        .ref-list {
-            margin: 10px 0;
-            max-height: 200px;
-            overflow-y: auto;
-        }
-        .ref-item {
-            padding: 6px;
-            border-bottom: 1px solid var(--tg-theme-hint-color, #ccc);
-        }
-        .pagination {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            margin: 12px 0;
-        }
-
-        /* Ачивки / магазин */
         .grid-2 {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -135,8 +78,6 @@
             opacity: 1;
             background: #ffe6b3;
         }
-
-        /* вкладки */
         .tabs {
             display: flex;
             gap: 8px;
@@ -159,26 +100,39 @@
         .tab-content.active {
             display: block;
         }
-
-        /* Стиль для валют/погоды */
         .weather-currency {
             font-size: 13px;
             background: var(--tg-theme-bg-color, #fff);
             border-radius: 20px;
             padding: 8px;
         }
-
+        .ref-item {
+            padding: 6px;
+            border-bottom: 1px solid var(--tg-theme-hint-color, #ccc);
+        }
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 12px 0;
+        }
         footer {
             text-align: center;
             font-size: 11px;
             margin-top: 20px;
             color: var(--tg-theme-hint-color, #aaa);
         }
+        input, select {
+            padding: 8px;
+            border-radius: 20px;
+            border: 1px solid #ccc;
+            width: 100%;
+            margin: 6px 0;
+        }
     </style>
 </head>
 <body>
 
-<!-- Шапка с профилем -->
 <div class="card">
     <div class="flex-row">
         <img class="avatar" id="userAvatar" src="" alt="avatar">
@@ -187,17 +141,9 @@
             <div id="userUsername"></div>
             <div class="balance">💎 <span id="shlakBalance">0</span></div>
         </div>
-        <div style="margin-left: auto;">
-            <button id="dailyBtn">🎁 Ежедневный</button>
-        </div>
     </div>
-    <div class="progress-bar">
-        <div class="progress-fill" id="gameProgressFill">0%</div>
-    </div>
-    <div id="gameAccessMessage">🔒 Доступ к играм: 10 рефералов + подписка</div>
 </div>
 
-<!-- Вкладки -->
 <div class="tabs">
     <div class="tab active" data-tab="home">🏠 Главная</div>
     <div class="tab" data-tab="shop">🏪 Магазин</div>
@@ -209,35 +155,23 @@
     <div class="tab" data-tab="settings">⚙️ Профиль</div>
 </div>
 
-<!-- Домашняя вкладка -->
 <div id="home" class="tab-content active">
     <div class="card">
-        <div class="space-between">
-            <span>🔘 Кликер:</span>
-            <button id="clickMainBtn">Кликнуть (+1 💎)</button>
-        </div>
-        <div class="space-between" style="margin-top: 12px;">
-            <span>🎲 Лотерея (админ):</span>
-            <button id="lotteryBtn">🎲 Разыграть 50 💎</button>
-        </div>
         <div class="weather-currency" id="weatherCurrencyBlock">
             🌤️ Загрузка погоды...
         </div>
-        <div class="space-between" style="margin-top: 12px;">
-            <span>🔗 Секретный контент (виралка):</span>
-            <span id="viralLinkBlock">❌ нет</span>
+        <div style="margin-top: 12px;">
+            👋 Добро пожаловать! Здесь ты можешь играть, покупать скины и повышать лимит рефералов.
         </div>
     </div>
 </div>
 
-<!-- Магазин -->
 <div id="shop" class="tab-content">
     <div class="card">
         <div class="grid-2" id="shopItemsContainer"></div>
     </div>
 </div>
 
-<!-- Игры -->
 <div id="games" class="tab-content">
     <div class="card">
         <h3>🎯 Угадай число (стоимость 5 💎)</h3>
@@ -256,7 +190,6 @@
     </div>
 </div>
 
-<!-- Рефералы -->
 <div id="referrals" class="tab-content">
     <div class="card">
         <div class="space-between">
@@ -269,28 +202,21 @@
         <h4>Приглашённые друзья</h4>
         <div id="refListContainer"></div>
         <div class="pagination" id="refPagination"></div>
-        <div class="flex-row">
-            <input type="text" id="addRefName" placeholder="Username друга">
-            <button id="addRefBtn">➕ Добавить вручную (тест)</button>
-        </div>
     </div>
 </div>
 
-<!-- Достижения -->
 <div id="achievements" class="tab-content">
     <div class="card">
         <div class="grid-2" id="achievementsContainer"></div>
     </div>
 </div>
 
-<!-- История -->
 <div id="history" class="tab-content">
     <div class="card">
         <div id="historyList"></div>
     </div>
 </div>
 
-<!-- Лидерборд -->
 <div id="leaderboard" class="tab-content">
     <div class="card">
         <div class="tabs" style="margin-bottom: 8px;">
@@ -301,79 +227,92 @@
     </div>
 </div>
 
-<!-- Профиль / настройки -->
 <div id="settings" class="tab-content">
     <div class="card">
-        <label>Имя:</label>
+        <label>Имя (отображается в боте и здесь):</label>
         <input type="text" id="editName" placeholder="Ваше имя"><br><br>
-        <label>Username (без @):</label>
-        <input type="text" id="editUsername" placeholder="username"><br><br>
-        <button id="saveProfileBtn">Сохранить</button>
+        <button id="saveProfileBtn">Сохранить имя</button>
         <hr>
-        <button id="resetDataBtn" class="danger-btn">⚠️ Сбросить все данные</button>
+        <button id="resetDataBtn" class="danger-btn" style="background:#e55353;">⚠️ Сбросить локальный прогресс</button>
     </div>
 </div>
 
-<footer>QOWL World — премиум версия. Данные сохраняются локально.</footer>
+<footer>Данные сохраняются на сервере бота. Имя синхронизируется с ботом.</footer>
 
 <script>
-    // -------------------- ИНИЦИАЛИЗАЦИЯ WEB APP --------------------
     const tg = window.Telegram.WebApp;
     tg.ready();
     tg.expand();
 
+    // Пользователь из Telegram
     let userData = tg.initDataUnsafe?.user || {};
-    let userTelegramId = userData.id || Math.floor(Math.random() * 1000000);
+    let userTelegramId = userData.id;
     let userFirstName = userData.first_name || "Гость";
-    let userLastName = userData.last_name || "";
     let userUsername = userData.username || "";
     let userPhotoUrl = userData.photo_url || "";
-    let isPremium = userData.is_premium || false;
 
-    // -------------------- ГЛОБАЛЬНОЕ СОСТОЯНИЕ --------------------
+    // Локальное состояние (всё, кроме рефералов и имени, хранится только в RAM)
     let state = {
-        shlak: 0,                // валюта
-        clicksTotal: 0,         // всего кликов (для ачивки 100)
+        shlak: 100,          // начальный капитал для демонстрации
         dailyStreak: 0,
         lastDailyDate: null,
-        refs: [],               // массив объектов { id, name, date }
-        refLimit: 10,           // текущий лимит рефералов (макс)
-        skin: "🪨",             // emoji скина
-        achievements: { firstRef: false, tenRefs: false, subscribed: false, hundredClicks: false, daily7: false, viralUnlocked: false },
-        historyLogs: [],        // { action, amount, date }
-        clickHistory: [],       // [{ clicks, date }] для лидерборда
+        refs: [],            // загружается из бота
+        refLimit: 10,
+        skin: "🪨",
+        achievements: { firstRef: false, tenRefs: false, subscribed: false, hundredClicks: false, daily7: false },
+        historyLogs: [],
+        clicksTotal: 0,      // для ачивки 100 кликов (клики теперь только через игры? но кликер убран, поэтому оставим)
+        clickHistory: [],
         displayName: userFirstName,
         displayUsername: userUsername,
-        subscribedToChannel: false, // имитация подписки (кнопка проверки)
-        secretChannelLink: "https://t.me/+секрет_канал"
+        subscribedToChannel: true, // имитация, так как проверка в боте
     };
 
-    // Загрузка из localStorage
-    function loadState() {
-        const saved = localStorage.getItem("qowlWorld_" + userTelegramId);
-        if (saved) {
-            try {
-                const parsed = JSON.parse(saved);
-                Object.assign(state, parsed);
-                if (!state.clickHistory) state.clickHistory = [];
-                if (!state.achievements) state.achievements = {};
-                if (!state.historyLogs) state.historyLogs = [];
-                if (!state.refs) state.refs = [];
-                state.displayName = state.displayName || userFirstName;
-                state.displayUsername = state.displayUsername || userUsername;
-            } catch(e) {}
-        }
-        // приветственный бонус при первом запуске
-        if (!saved) {
-            state.shlak = 5;
-            addHistory("🎁 Приветственный бонус", 5);
-            saveState();
-        }
-        updateUI();
+    // Запрос данных у бота (рефералы и текущее имя)
+    function requestUserDataFromBot() {
+        tg.sendData(JSON.stringify({ type: "get_user_data", user_id: userTelegramId }));
     }
 
-    function saveState() {
-        localStorage.setItem("qowlWorld_" + userTelegramId, JSON.stringify(state));
+    // Отправка нового имени в бот
+    function sendNameToBot(newName) {
+        tg.sendData(JSON.stringify({ type: "update_name", name: newName, user_id: userTelegramId }));
+    }
+
+    // Обработка входящих сообщений от бота (через Telegram.WebApp.onEvent)
+    tg.onEvent('message', (event) => {
+        try {
+            const data = JSON.parse(event.data);
+            if (data.type === "user_data") {
+                // Бот прислал список рефералов и имя
+                if (data.refs) state.refs = data.refs;
+                if (data.display_name) state.displayName = data.display_name;
+                updateUI();
+                renderRefList(1);
+            }
+        } catch(e) {}
+    });
+
+    // Функции UI
+    function updateUI() {
+        document.getElementById("shlakBalance").innerText = state.shlak;
+        document.getElementById("userFullName").innerHTML = `${state.displayName} ${userData.is_premium ? '<span style="background:gold; border-radius:20px; padding:2px 8px;">⭐ PREMIUM</span>' : ''}`;
+        document.getElementById("userUsername").innerText = state.displayUsername ? `@${state.displayUsername}` : "";
+        if (userPhotoUrl) document.getElementById("userAvatar").src = userPhotoUrl;
+        else {
+            const canvas = document.createElement('canvas');
+            canvas.width = 64; canvas.height = 64;
+            const ctx = canvas.getContext('2d');
+            ctx.fillStyle = "#2481cc";
+            ctx.fillRect(0,0,64,64);
+            ctx.fillStyle = "#fff";
+            ctx.font = "bold 32px sans-serif";
+            ctx.fillText((state.displayName[0]||"U").toUpperCase(), 18, 44);
+            document.getElementById("userAvatar").src = canvas.toDataURL();
+        }
+        renderShop();
+        renderAchievements();
+        renderHistory();
+        renderLeaderboard('week');
     }
 
     function addHistory(action, amount = null) {
@@ -383,127 +322,7 @@
             date: new Date().toISOString()
         });
         if (state.historyLogs.length > 100) state.historyLogs.pop();
-        saveState();
-    }
-
-    // Обновление интерфейса
-    function updateUI() {
-        document.getElementById("shlakBalance").innerText = state.shlak;
-        document.getElementById("userFullName").innerHTML = `${state.displayName} ${isPremium ? '<span style="background:gold; border-radius:20px; padding:2px 8px;">⭐ PREMIUM</span>' : ''}`;
-        document.getElementById("userUsername").innerText = state.displayUsername ? `@${state.displayUsername}` : "";
-        if (userPhotoUrl) document.getElementById("userAvatar").src = userPhotoUrl;
-        else {
-            // Заглушка с инициалом
-            const initial = (state.displayName[0] || "U").toUpperCase();
-            const canvas = document.createElement('canvas');
-            canvas.width = 64; canvas.height = 64;
-            const ctx = canvas.getContext('2d');
-            ctx.fillStyle = "#2481cc";
-            ctx.fillRect(0,0,64,64);
-            ctx.fillStyle = "#fff";
-            ctx.font = "bold 32px sans-serif";
-            ctx.fillText(initial, 18, 44);
-            document.getElementById("userAvatar").src = canvas.toDataURL();
-        }
-        // Прогресс-бар до игры
-        const refsCount = state.refs.length;
-        const progress = Math.min(100, ((refsCount / 10) * 100));
-        const gameAvailable = (refsCount >= 10 && state.subscribedToChannel);
-        document.getElementById("gameProgressFill").style.width = progress + "%";
-        document.getElementById("gameProgressFill").innerText = `${refsCount}/10`;
-        document.getElementById("gameAccessMessage").innerHTML = gameAvailable ? "✅ Доступ к играм открыт!" : `🔒 Нужно ${10-refsCount} рефералов и подписка`;
-        // Виральная механика
-        const viralUnlocked = (state.refs.length >= 3 && !state.achievements.viralUnlocked);
-        if (viralUnlocked) {
-            state.achievements.viralUnlocked = true;
-            addHistory("🔓 Открыт секретный канал (3 реферала)", 0);
-            saveState();
-        }
-        const viralLink = (state.refs.length >= 3) ? `<a href="${state.secretChannelLink}" target="_blank">🔗 Секретный канал</a>` : "❌ нет (пригласи 3 друзей)";
-        document.getElementById("viralLinkBlock").innerHTML = viralLink;
-
-        // Обновление достижений
-        checkAchievements();
-        renderShop();
-        renderAchievements();
-        renderRefList(1);
         renderHistory();
-        renderLeaderboard('week');
-    }
-
-    // Достижения и награды
-    function checkAchievements() {
-        let changed = false;
-        if (!state.achievements.firstRef && state.refs.length >= 1) {
-            state.achievements.firstRef = true;
-            state.shlak += 10;
-            addHistory("🏆 Достижение: Первый реферал", 10);
-            changed = true;
-        }
-        if (!state.achievements.tenRefs && state.refs.length >= 10) {
-            state.achievements.tenRefs = true;
-            state.shlak += 50;
-            addHistory("🏆 Достижение: 10 рефералов", 50);
-            changed = true;
-        }
-        if (!state.achievements.subscribed && state.subscribedToChannel) {
-            state.achievements.subscribed = true;
-            state.shlak += 5;
-            addHistory("🏆 Достижение: Подписка на канал", 5);
-            changed = true;
-        }
-        if (!state.achievements.hundredClicks && state.clicksTotal >= 100) {
-            state.achievements.hundredClicks = true;
-            state.shlak += 20;
-            addHistory("🏆 Достижение: 100 кликов", 20);
-            changed = true;
-        }
-        if (!state.achievements.daily7 && state.dailyStreak >= 7) {
-            state.achievements.daily7 = true;
-            state.shlak += 30;
-            addHistory("🏆 Достижение: Серия 7 дней", 30);
-            changed = true;
-        }
-        if (changed) saveState();
-    }
-
-    // Ежедневный бонус
-    function dailyBonus() {
-        const today = new Date().toDateString();
-        if (state.lastDailyDate === today) {
-            alert("Вы уже получали бонус сегодня!");
-            return;
-        }
-        let streak = state.dailyStreak;
-        const yesterday = new Date();
-        yesterday.setDate(yesterday.getDate() - 1);
-        if (state.lastDailyDate === yesterday.toDateString()) streak++;
-        else streak = 1;
-        const reward = 10 + streak * 2;
-        state.shlak += reward;
-        state.dailyStreak = streak;
-        state.lastDailyDate = today;
-        addHistory(`🎁 Ежедневный бонус (серия ${streak})`, reward);
-        saveState();
-        updateUI();
-        alert(`+${reward} 💎! Серия: ${streak} дней`);
-    }
-
-    // Клик
-    function clickHandler() {
-        if (!state.subscribedToChannel || state.refs.length < 10) {
-            alert("Доступ к кликеру только при 10 рефералах и подписке!");
-            return;
-        }
-        state.shlak++;
-        state.clicksTotal++;
-        addHistory("Клик", 1);
-        state.clickHistory.push({ clicks: 1, date: new Date().toISOString() });
-        if (state.clickHistory.length > 500) state.clickHistory.shift();
-        saveState();
-        updateUI();
-        // Отправка в бота (опционально)
-        tg.sendData(JSON.stringify({ action: 'click', total: state.clicksTotal }));
     }
 
     // Магазин
@@ -515,6 +334,7 @@
     ];
     function renderShop() {
         const container = document.getElementById("shopItemsContainer");
+        if (!container) return;
         container.innerHTML = "";
         shopItems.forEach(item => {
             const btn = document.createElement("button");
@@ -533,76 +353,65 @@
             state.refLimit += 5;
             addHistory(`Покупка: +5 лимит рефералов (теперь ${state.refLimit})`, -item.price);
         } else if (item.type === "bonusRef") {
-            // добавляем бонусного реферала (виртуального друга)
-            const newRef = { id: Date.now(), name: "Бонусный друг", date: new Date().toISOString() };
+            // добавляем бонусного реферала (локально, но для синхронизации с ботом нужно отправлять)
+            const newRef = { name: "Бонусный друг", date: new Date().toISOString() };
             state.refs.push(newRef);
             addHistory(`Покупка: +1 бонусный реферал`, -item.price);
         } else if (item.type === "skin") {
             state.skin = item.emoji;
             addHistory(`Покупка скина ${item.name}`, -item.price);
         }
-        saveState();
         updateUI();
     }
 
-    // Рефералы с пагинацией
+    // Рефералы с пагинацией (без ручного добавления, только загруженные из бота)
     let currentRefPage = 1;
     const refsPerPage = 5;
     function renderRefList(page) {
+        if (!state.refs) state.refs = [];
         const start = (page-1)*refsPerPage;
         const end = start + refsPerPage;
         const paginated = state.refs.slice(start, end);
         const container = document.getElementById("refListContainer");
+        if (!container) return;
         container.innerHTML = "";
         paginated.forEach(ref => {
             const div = document.createElement("div");
             div.className = "ref-item";
-            div.innerText = `${ref.name} (приглашён: ${new Date(ref.date).toLocaleDateString()})`;
+            div.innerText = `${ref.name || ref.username || "Неизвестный"} (приглашён: ${new Date(ref.date).toLocaleDateString()})`;
             container.appendChild(div);
         });
         const totalPages = Math.ceil(state.refs.length / refsPerPage);
         const pagDiv = document.getElementById("refPagination");
-        pagDiv.innerHTML = "";
-        if (page > 1) {
-            const prevBtn = document.createElement("button");
-            prevBtn.innerText = "◀";
-            prevBtn.onclick = () => { currentRefPage--; renderRefList(currentRefPage); };
-            pagDiv.appendChild(prevBtn);
+        if (pagDiv) {
+            pagDiv.innerHTML = "";
+            if (page > 1) {
+                const prevBtn = document.createElement("button");
+                prevBtn.innerText = "◀";
+                prevBtn.onclick = () => { currentRefPage--; renderRefList(currentRefPage); };
+                pagDiv.appendChild(prevBtn);
+            }
+            pagDiv.appendChild(document.createTextNode(`Страница ${page} из ${totalPages||1}`));
+            if (page < totalPages) {
+                const nextBtn = document.createElement("button");
+                nextBtn.innerText = "▶";
+                nextBtn.onclick = () => { currentRefPage++; renderRefList(currentRefPage); };
+                pagDiv.appendChild(nextBtn);
+            }
         }
-        pagDiv.appendChild(document.createTextNode(`Страница ${page} из ${totalPages||1}`));
-        if (page < totalPages) {
-            const nextBtn = document.createElement("button");
-            nextBtn.innerText = "▶";
-            nextBtn.onclick = () => { currentRefPage++; renderRefList(currentRefPage); };
-            pagDiv.appendChild(nextBtn);
-        }
-    }
-    function addReferralManually() {
-        const name = document.getElementById("addRefName").value;
-        if (!name) return;
-        if (state.refs.length >= state.refLimit) {
-            alert("Лимит рефералов исчерпан! Купите увеличение в магазине.");
-            return;
-        }
-        state.refs.push({ id: Date.now(), name: name, date: new Date().toISOString() });
-        addHistory(`➕ Пригласил друга: ${name}`, 0);
-        saveState();
-        updateUI();
-        document.getElementById("addRefName").value = "";
-        renderRefList(currentRefPage);
     }
 
-    // Достижения отображение
+    // Достижения (упрощённо, без сохранения)
     const achList = [
         { id: "firstRef", name: "Первый реферал", reward: 10 },
         { id: "tenRefs", name: "10 рефералов", reward: 50 },
         { id: "subscribed", name: "Подписка на канал", reward: 5 },
         { id: "hundredClicks", name: "100 кликов", reward: 20 },
-        { id: "daily7", name: "Серия 7 дней", reward: 30 },
-        { id: "viralUnlocked", name: "Виралка (3 друга)", reward: 0 }
+        { id: "daily7", name: "Серия 7 дней", reward: 30 }
     ];
     function renderAchievements() {
         const container = document.getElementById("achievementsContainer");
+        if (!container) return;
         container.innerHTML = "";
         achList.forEach(ach => {
             const div = document.createElement("div");
@@ -614,6 +423,7 @@
 
     function renderHistory() {
         const container = document.getElementById("historyList");
+        if (!container) return;
         container.innerHTML = "";
         state.historyLogs.slice(0, 20).forEach(log => {
             const d = new Date(log.date);
@@ -621,7 +431,6 @@
         });
     }
 
-    // Лидерборд по кликам
     function renderLeaderboard(period) {
         const now = new Date();
         let filtered = state.clickHistory.filter(click => {
@@ -630,14 +439,12 @@
             else return (now - d) <= 30*24*3600000;
         });
         const totalClicks = filtered.reduce((sum, c) => sum + c.clicks, 0);
-        // Здесь лидерборд свой, но для одного пользователя просто покажем его очки
         const container = document.getElementById("leaderboardList");
-        container.innerHTML = `<div>🥇 Ваши клики за период: ${totalClicks}</div><div>Топ других пользователей пока недоступен (локальная версия).</div>`;
+        if (container) container.innerHTML = `<div>🥇 Ваши клики за период: ${totalClicks}</div><div>Топ других пользователей пока недоступен (локальная версия).</div>`;
     }
 
-    // Игры
+    // Игры (без ограничений)
     function guessNumber() {
-        if (!state.subscribedToChannel || state.refs.length < 10) { alert("Доступ к игре закрыт"); return; }
         if (state.shlak < 5) { alert("Нужно 5 шлакоблоков"); return; }
         const guess = parseInt(document.getElementById("guessInput").value);
         if (isNaN(guess) || guess<1 || guess>10) { alert("Число от 1 до 10"); return; }
@@ -647,16 +454,14 @@
         if (guess === target) {
             win = 15;
             state.shlak += win;
-            addHistory(`🎮 Игра "Угадай число" (угадал ${target})`, win-5);
+            addHistory(`🎮 Угадай число (угадал ${target})`, win-5);
         } else {
-            addHistory(`🎮 Игра "Угадай число" (проигрыш, было ${target})`, -5);
+            addHistory(`🎮 Угадай число (проигрыш, было ${target})`, -5);
         }
-        saveState();
         updateUI();
         document.getElementById("guessResult").innerHTML = win ? `✅ Вы угадали! +${win} 💎` : `❌ Не угадали! Было ${target}. -5 💎`;
     }
     function playRPS(userChoice) {
-        if (!state.subscribedToChannel || state.refs.length < 10) { alert("Доступ к игре закрыт"); return; }
         if (state.shlak < 5) { alert("Нужно 5 шлакоблоков"); return; }
         const choices = ["rock","paper","scissors"];
         const botChoice = choices[Math.floor(Math.random()*3)];
@@ -667,42 +472,45 @@
         state.shlak -= 5;
         let reward = 0;
         if (win) { reward = 12; state.shlak += reward; }
-        addHistory(`✂️ Камень-ножницы-бумага (${userChoice} vs ${botChoice}) ${win?"выигрыш":"проигрыш"}`, win ? reward-5 : -5);
-        saveState();
+        addHistory(`✂️ КНБ (${userChoice} vs ${botChoice}) ${win?"выигрыш":"проигрыш"}`, win ? reward-5 : -5);
         updateUI();
         document.getElementById("rpsResult").innerHTML = win ? `✅ Победа! +${reward} 💎` : `❌ Поражение! -5 💎 (бот выбрал ${botChoice})`;
     }
 
-    // Лотерея
-    function runLottery() {
-        if (state.refs.length < 3) { alert("Лотерея доступна, если у вас 3+ реферала (для примера)"); return; }
-        const prize = 50;
-        state.shlak += prize;
-        addHistory("🎲 Выигрыш в лотерее!", prize);
-        saveState();
-        updateUI();
-        alert(`Поздравляем! Вы выиграли ${prize} 💎!`);
-    }
-
-    // Редактирование профиля
+    // Редактирование профиля с отправкой в бот
     function saveProfile() {
-        const newName = document.getElementById("editName").value;
-        const newUsername = document.getElementById("editUsername").value;
-        if (newName) state.displayName = newName;
-        if (newUsername) state.displayUsername = newUsername;
-        addHistory("✏️ Изменил профиль", 0);
-        saveState();
-        updateUI();
-        alert("Профиль обновлён");
-    }
-    function resetAllData() {
-        if (confirm("ВСЕ ДАННЫЕ БУДУТ УДАЛЕНЫ. Продолжить?")) {
-            localStorage.removeItem("qowlWorld_" + userTelegramId);
-            location.reload();
+        const newName = document.getElementById("editName").value.trim();
+        if (newName && newName !== state.displayName) {
+            state.displayName = newName;
+            sendNameToBot(newName);
+            addHistory("✏️ Изменил имя", 0);
+            updateUI();
+            alert("Имя обновлено и отправлено боту");
+        } else if (!newName) {
+            alert("Введите имя");
+        } else {
+            alert("Имя не изменилось");
         }
     }
 
-    // Погода и курс валют
+    function resetLocalProgress() {
+        if (confirm("Сбросить локальный прогресс (шлакоблоки, историю, достижения)? Имя и рефералы синхронизируются с ботом заново.")) {
+            state.shlak = 100;
+            state.dailyStreak = 0;
+            state.lastDailyDate = null;
+            state.achievements = { firstRef: false, tenRefs: false, subscribed: false, hundredClicks: false, daily7: false };
+            state.historyLogs = [];
+            state.clicksTotal = 0;
+            state.clickHistory = [];
+            state.skin = "🪨";
+            state.refLimit = 10;
+            updateUI();
+            addHistory("Локальный прогресс сброшен", 0);
+            requestUserDataFromBot(); // перезагрузим рефералов и имя из бота
+        }
+    }
+
+    // Погода и курс
     async function fetchWeatherCurrency() {
         try {
             const weatherResp = await fetch("https://wttr.in/Москва?format=j1&lang=ru");
@@ -719,11 +527,12 @@
     fetchWeatherCurrency();
     setInterval(fetchWeatherCurrency, 600000);
 
-    // Копирование ссылки
+    // Ссылка
     function updateRefLink() {
-        const botUsername = "QOWLBot"; // замените на реального бота
+        const botUsername = "QOWLBot"; // замените на вашего бота
         const link = `https://t.me/${botUsername}?start=${userTelegramId}`;
-        document.getElementById("refLinkInput").value = link;
+        const input = document.getElementById("refLinkInput");
+        if (input) input.value = link;
     }
     function copyRefLink() {
         const input = document.getElementById("refLinkInput");
@@ -733,40 +542,18 @@
     }
     function shareRefLink() {
         const link = document.getElementById("refLinkInput").value;
-        tg.sendData(JSON.stringify({ action: 'share', link: link }));
         window.open(`https://t.me/share/url?url=${encodeURIComponent(link)}&text=Присоединяйся к QOWL!`);
     }
 
-    // Подписка (имитация)
-    function initSubscriptionButton() {
-        // В боте есть проверка, но здесь добавим вручную для демо
-        const subBtn = document.createElement("button");
-        subBtn.innerText = state.subscribedToChannel ? "✅ Вы подписаны" : "📌 Подписаться (имитация)";
-        subBtn.onclick = () => {
-            if (!state.subscribedToChannel) {
-                state.subscribedToChannel = true;
-                addHistory("Подписка на канал (имитация)", 0);
-                saveState();
-                updateUI();
-                alert("Подписка подтверждена! (демо)");
-            }
-        };
-        document.querySelector("#home .card").appendChild(subBtn);
-    }
-
-    // Event listeners
-    document.getElementById("dailyBtn").onclick = dailyBonus;
-    document.getElementById("clickMainBtn").onclick = clickHandler;
-    document.getElementById("lotteryBtn").onclick = runLottery;
+    // Обработчики событий
     document.getElementById("guessBtn").onclick = guessNumber;
     document.getElementById("rockBtn").onclick = () => playRPS("rock");
     document.getElementById("paperBtn").onclick = () => playRPS("paper");
     document.getElementById("scissorsBtn").onclick = () => playRPS("scissors");
     document.getElementById("copyRefBtn").onclick = copyRefLink;
     document.getElementById("shareRefBtn").onclick = shareRefLink;
-    document.getElementById("addRefBtn").onclick = addReferralManually;
     document.getElementById("saveProfileBtn").onclick = saveProfile;
-    document.getElementById("resetDataBtn").onclick = resetAllData;
+    document.getElementById("resetDataBtn").onclick = resetLocalProgress;
 
     // Вкладки
     const tabs = document.querySelectorAll(".tab");
@@ -778,6 +565,7 @@
             tabs.forEach(t => t.classList.remove("active"));
             tab.classList.add("active");
             if (targetTab === "leaderboard") renderLeaderboard('week');
+            if (targetTab === "referrals") renderRefList(currentRefPage);
         });
     });
     document.querySelectorAll("[data-leaderboard]").forEach(lb => {
@@ -787,10 +575,11 @@
         });
     });
 
-    // Инициализация
-    loadState();
+    // Старт
     updateRefLink();
-    initSubscriptionButton();
+    requestUserDataFromBot();
+    updateUI();
+    renderRefList(1);
 </script>
 </body>
 </html>
