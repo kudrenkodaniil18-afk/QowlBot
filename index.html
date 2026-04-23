@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>QOWL | Премиум</title>
+    <title>QOWL World — Премиум</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         * {
@@ -11,371 +11,295 @@
             padding: 0;
             box-sizing: border-box;
         }
-
         body {
+            font-family: 'Segoe UI', 'SF Pro Text', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
             background: #0a0a0a;
-            font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
             color: #ffffff;
-            padding: 20px;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
+            padding: 16px;
+            padding-bottom: 30px;
         }
-
-        /* Карточки с золотой окантовкой */
+        /* Карточки золотые */
         .card {
-            background: rgba(20, 20, 20, 0.8);
-            backdrop-filter: blur(10px);
+            background: linear-gradient(135deg, #1a1a1a 0%, #0d0d0d 100%);
+            border: 1px solid rgba(212, 175, 55, 0.3);
             border-radius: 32px;
-            padding: 24px;
-            margin-bottom: 20px;
-            border: 1px solid rgba(255, 215, 0, 0.3);
-            box-shadow: 0 8px 20px rgba(0,0,0,0.5), 0 0 15px rgba(255,215,0,0.1);
-            transition: transform 0.2s, box-shadow 0.2s;
+            padding: 20px;
+            margin-bottom: 16px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.4), 0 0 0 1px rgba(212,175,55,0.1) inset;
+            backdrop-filter: blur(2px);
         }
-        .card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 12px 28px rgba(0,0,0,0.6), 0 0 20px rgba(255,215,0,0.2);
-        }
-
         /* Профиль */
-        .profile {
+        .profile-header {
             display: flex;
             align-items: center;
-            gap: 20px;
+            gap: 16px;
             flex-wrap: wrap;
         }
         .avatar {
-            width: 80px;
-            height: 80px;
+            width: 70px;
+            height: 70px;
             border-radius: 50%;
             object-fit: cover;
-            border: 2px solid #ffd700;
-            box-shadow: 0 0 10px rgba(255,215,0,0.5);
+            border: 2px solid #d4af37;
+            box-shadow: 0 0 10px rgba(212,175,55,0.5);
         }
-        .info h1 {
-            font-size: 1.8rem;
+        .profile-name {
+            font-size: 1.5rem;
             font-weight: 700;
-            letter-spacing: -0.5px;
-            background: linear-gradient(135deg, #ffffff, #ffd700);
+            background: linear-gradient(135deg, #fff, #d4af37);
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
         }
-        .info .username {
+        .profile-username {
+            font-size: 0.85rem;
             color: #aaaaaa;
-            font-size: 0.9rem;
-            margin-top: 4px;
         }
-        .stats {
-            display: flex;
-            gap: 20px;
-            margin-top: 20px;
-            flex-wrap: wrap;
-        }
-        .stat-item {
-            background: #1a1a1a;
-            border-radius: 40px;
-            padding: 8px 20px;
-            border: 1px solid #ffd70033;
-        }
-        .stat-label {
-            font-size: 0.75rem;
-            color: #ffd700;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-        .stat-value {
-            font-size: 1.5rem;
-            font-weight: bold;
-        }
-        .datetime {
-            margin-top: 15px;
-            font-size: 0.8rem;
-            color: #ccc;
-            display: flex;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            gap: 10px;
-            border-top: 1px solid #333;
-            padding-top: 15px;
-        }
-
-        /* Кнопки */
         button {
-            background: linear-gradient(135deg, #ffd700, #ffb347);
+            background: linear-gradient(135deg, #d4af37, #b8942e);
             border: none;
-            border-radius: 60px;
-            padding: 12px 24px;
-            font-weight: 700;
-            font-size: 0.9rem;
+            border-radius: 40px;
+            padding: 10px 18px;
+            font-weight: 600;
+            font-size: 0.85rem;
             color: #0a0a0a;
             cursor: pointer;
-            transition: transform 0.1s, opacity 0.2s;
-            margin: 5px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+            transition: all 0.2s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
         }
         button:active {
             transform: scale(0.96);
+            filter: brightness(0.9);
         }
-        .btn-secondary {
+        .secondary-btn {
             background: #2a2a2a;
-            color: #ffd700;
-            border: 1px solid #ffd700;
+            color: #d4af37;
+            border: 1px solid #d4af37;
         }
-        .btn-outline {
-            background: transparent;
-            border: 1px solid #ffd700;
-            color: #ffd700;
-        }
-
-        /* Вкладки */
         .tabs {
             display: flex;
-            gap: 12px;
-            margin-bottom: 24px;
+            gap: 8px;
+            margin-bottom: 20px;
             flex-wrap: wrap;
-            border-bottom: 1px solid #333;
-            padding-bottom: 10px;
+            justify-content: center;
         }
         .tab {
-            background: transparent;
-            color: #aaa;
-            font-weight: 600;
+            background: #1a1a1a;
             padding: 8px 20px;
             border-radius: 40px;
+            font-weight: 500;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: 0.2s;
+            border: 1px solid #333;
+            color: #ccc;
         }
         .tab.active {
-            background: #ffd700;
+            background: #d4af37;
             color: #0a0a0a;
-            box-shadow: 0 0 10px rgba(255,215,0,0.5);
+            border-color: #d4af37;
+            font-weight: bold;
         }
-        .tab-content {
-            display: none;
-            animation: fade 0.3s;
+        .tab-content { display: none; animation: fade 0.2s; }
+        .tab-content.active { display: block; }
+        @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
+        input, textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border-radius: 28px;
+            border: 1px solid #444;
+            background: #111;
+            color: #fff;
+            font-size: 1rem;
+            margin-bottom: 12px;
         }
-        .tab-content.active {
-            display: block;
-        }
-        @keyframes fade {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* Список рефералов */
-        .ref-list {
-            margin: 15px 0;
-            max-height: 300px;
-            overflow-y: auto;
-        }
-        .ref-item {
-            background: #1e1e1e;
-            margin: 8px 0;
-            padding: 12px;
-            border-radius: 20px;
+        input:focus { outline: none; border-color: #d4af37; box-shadow: 0 0 8px rgba(212,175,55,0.3); }
+        .info-row {
             display: flex;
             justify-content: space-between;
-            border-left: 3px solid #ffd700;
+            margin-top: 12px;
+            flex-wrap: wrap;
+            gap: 8px;
         }
-
-        /* Достижения */
-        .achievements-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-            gap: 15px;
+        .weather-time {
+            background: #111;
+            border-radius: 40px;
+            padding: 6px 14px;
+            font-size: 0.8rem;
+            color: #d4af37;
+            border: 1px solid #333;
         }
-        .achievement-card {
-            background: #1a1a1a;
-            border-radius: 24px;
-            padding: 15px;
-            text-align: center;
-            border: 1px solid #ffd70033;
-            transition: 0.2s;
-        }
-        .achievement-card.locked {
-            opacity: 0.5;
-            filter: grayscale(0.5);
-        }
-        .achievement-card.unlocked {
-            border-color: #ffd700;
-            background: linear-gradient(145deg, #1e1e1e, #252525);
-        }
-        .achievement-icon {
-            font-size: 2.5rem;
-            margin-bottom: 8px;
-        }
-        .achievement-title {
-            font-weight: bold;
-            margin-bottom: 5px;
-        }
-        .achievement-desc {
-            font-size: 0.7rem;
-            color: #aaa;
-        }
-
         footer {
             text-align: center;
-            font-size: 0.7rem;
+            font-size: 0.65rem;
+            margin-top: 20px;
             color: #555;
-            margin-top: 30px;
         }
-        a {
-            color: #ffd700;
-            text-decoration: none;
-        }
-        input {
-            background: #1e1e1e;
-            border: 1px solid #ffd70033;
-            border-radius: 40px;
-            padding: 12px 20px;
-            color: white;
-            width: 100%;
-            margin: 10px 0;
-        }
-        .ref-link-container {
-            display: flex;
-            gap: 10px;
-            margin: 15px 0;
-        }
-        .ref-link-container input {
-            flex: 1;
+        .badge {
+            background: #d4af37;
+            color: #0a0a0a;
+            border-radius: 30px;
+            padding: 4px 12px;
+            font-size: 0.7rem;
+            font-weight: bold;
+            display: inline-block;
         }
     </style>
 </head>
 <body>
 
 <div class="card">
-    <div class="profile">
-        <img class="avatar" id="avatar" src="" alt="avatar">
-        <div class="info">
-            <h1 id="fullName">Загрузка...</h1>
-            <div class="username" id="username"></div>
+    <div class="profile-header">
+        <img class="avatar" id="userAvatar" src="" alt="avatar">
+        <div>
+            <div class="profile-name" id="userFullName">Загрузка...</div>
+            <div class="profile-username" id="userUsername"></div>
         </div>
     </div>
-    <div class="stats">
-        <div class="stat-item">
-            <div class="stat-label">👥 Рефералы</div>
-            <div class="stat-value" id="refsCount">0</div>
-        </div>
-        <div class="stat-item">
-            <div class="stat-label">🏆 Достижения</div>
-            <div class="stat-value" id="achievementsCount">0</div>
-        </div>
-    </div>
-    <div class="datetime">
-        <span id="timeDate">--</span>
-        <span id="weather">🌤️ Загрузка...</span>
+    <div class="info-row">
+        <div class="weather-time" id="timeDisplay">⏰ --:--:--</div>
+        <div class="weather-time" id="weatherDisplay">🌤️ Загрузка...</div>
     </div>
 </div>
 
-<div class="tabs">
+<div class="tabs" id="tabsContainer">
     <div class="tab active" data-tab="home">🏠 Главная</div>
     <div class="tab" data-tab="referrals">👥 Рефералы</div>
     <div class="tab" data-tab="achievements">🏆 Достижения</div>
+    <div class="tab" data-tab="profile">✏️ Профиль</div>
 </div>
 
-<!-- Главная вкладка -->
+<!-- Главная -->
 <div id="home" class="tab-content active">
     <div class="card">
-        <button id="checkSubBtn">📌 Проверить подписку на канал</button>
-        <button id="refreshRefsBtn" class="btn-secondary">🔄 Обновить рефералов</button>
+        <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 10px;">
+            <button id="checkSubBtn">📌 Проверить подписку</button>
+            <button id="topBtn">🏆 Топ рефералов</button>
+            <button id="myAchievementsBtn">🏅 Мои достижения</button>
+        </div>
+        <div style="margin-top: 20px; text-align: center;">
+            <p>🔗 Твоя реферальная ссылка:</p>
+            <input type="text" id="refLinkInput" readonly style="text-align: center;">
+            <div style="margin-top: 10px;">
+                <button id="copyRefBtn">📋 Копировать</button>
+                <button id="shareRefBtn">📤 Поделиться</button>
+            </div>
+        </div>
     </div>
 </div>
 
 <!-- Рефералы -->
 <div id="referrals" class="tab-content">
     <div class="card">
-        <div class="ref-link-container">
-            <input type="text" id="refLink" readonly value="">
-            <button id="copyRefBtn">📋 Копировать</button>
-            <button id="shareRefBtn">📤 Поделиться</button>
-        </div>
-        <button id="showRefsBtn" class="btn-outline">👥 Посмотреть список рефералов</button>
-        <div id="refsListContainer" class="ref-list"></div>
+        <button id="showRefsBtn" style="width:100%">👥 Показать моих рефералов</button>
     </div>
 </div>
 
 <!-- Достижения -->
 <div id="achievements" class="tab-content">
     <div class="card">
-        <div class="achievements-grid" id="achievementsGrid"></div>
+        <p>✨ Нажмите «Мои достижения» на главной, чтобы увидеть список.</p>
     </div>
 </div>
 
-<footer>QOWL Premium | @qowl_bot</footer>
+<!-- Профиль (смена имени) -->
+<div id="profile" class="tab-content">
+    <div class="card">
+        <label>Имя (видно в боте):</label>
+        <input type="text" id="editName" placeholder="Новое имя">
+        <button id="saveProfileBtn">💾 Сохранить имя</button>
+    </div>
+</div>
+
+<footer>QOWL World — премиум-доступ</footer>
 
 <script>
     const tg = window.Telegram.WebApp;
     tg.ready();
     tg.expand();
 
-    // Данные пользователя из Telegram
+    // Получение данных пользователя
     let user = tg.initDataUnsafe?.user || {};
     let userId = user.id;
     let firstName = user.first_name || "Гость";
     let lastName = user.last_name || "";
     let username = user.username || "";
     let photoUrl = user.photo_url || "";
+    let isPremium = user.is_premium || false;
 
-    // Элементы
-    const avatarImg = document.getElementById("avatar");
-    const fullNameSpan = document.getElementById("fullName");
-    const usernameSpan = document.getElementById("username");
-    const refsCountSpan = document.getElementById("refsCount");
-    const achievementsCountSpan = document.getElementById("achievementsCount");
-    const refLinkInput = document.getElementById("refLink");
-    const refsListContainer = document.getElementById("refsListContainer");
-    const achievementsGrid = document.getElementById("achievementsGrid");
+    // DOM элементы
+    const userAvatar = document.getElementById("userAvatar");
+    const userFullName = document.getElementById("userFullName");
+    const userUsernameSpan = document.getElementById("userUsername");
+    const refLinkInput = document.getElementById("refLinkInput");
+    const editNameInput = document.getElementById("editName");
 
-    // Состояние достижений (будет получено от бота при загрузке)
-    let achievements = {
-        first_visit: false,
-        ten_refs: false,
-        subscribed: false
-    };
-    let refsList = [];
-    let refsCount = 0;
+    // Кнопки
+    const showRefsBtn = document.getElementById("showRefsBtn");
+    const checkSubBtn = document.getElementById("checkSubBtn");
+    const topBtn = document.getElementById("topBtn");
+    const myAchievementsBtn = document.getElementById("myAchievementsBtn");
+    const copyRefBtn = document.getElementById("copyRefBtn");
+    const shareRefBtn = document.getElementById("shareRefBtn");
+    const saveProfileBtn = document.getElementById("saveProfileBtn");
 
-    // Базовая реферальная ссылка с ботом @qowl_bot
-    const BOT_USERNAME = "qowl_bot";
-    const refLink = `https://t.me/${BOT_USERNAME}?start=${userId}`;
-    refLinkInput.value = refLink;
-
-    // Функция отправки команды боту
-    function sendCommand(type, extra = {}) {
-        tg.sendData(JSON.stringify({ type, ...extra }));
+    // Вспомогательные функции
+    function sendToBot(type, extra = {}) {
+        const payload = JSON.stringify({ type, ...extra });
+        tg.sendData(payload);
+        console.log("Sent:", payload);
     }
 
-    // Загрузка аватарки
+    // Обработчики
+    showRefsBtn.onclick = () => sendToBot("get_refs");
+    checkSubBtn.onclick = () => sendToBot("check_subscription_web");
+    topBtn.onclick = () => sendToBot("get_top");
+    myAchievementsBtn.onclick = () => sendToBot("get_achievements");
+    saveProfileBtn.onclick = () => {
+        const newName = editNameInput.value.trim();
+        if (newName) sendToBot("update_name", { name: newName });
+        else alert("Введите имя");
+    };
+    copyRefBtn.onclick = () => {
+        refLinkInput.select();
+        document.execCommand("copy");
+        tg.showPopup({ title: "Готово", message: "Ссылка скопирована!", buttons: [{ type: "ok" }] });
+    };
+    shareRefBtn.onclick = () => {
+        const link = refLinkInput.value;
+        window.open(`https://t.me/share/url?url=${encodeURIComponent(link)}&text=Присоединяйся к QOWL World!`);
+    };
+
+    // Аватар и имя
     if (photoUrl) {
-        avatarImg.src = photoUrl;
+        userAvatar.src = photoUrl;
     } else {
         const canvas = document.createElement('canvas');
-        canvas.width = 80; canvas.height = 80;
+        canvas.width = 70; canvas.height = 70;
         const ctx = canvas.getContext('2d');
-        ctx.fillStyle = "#ffd700";
-        ctx.fillRect(0,0,80,80);
-        ctx.fillStyle = "#0a0a0a";
-        ctx.font = "bold 36px sans-serif";
-        ctx.fillText((firstName[0] || "U").toUpperCase(), 28, 54);
-        avatarImg.src = canvas.toDataURL();
+        ctx.fillStyle = "#d4af37";
+        ctx.fillRect(0, 0, 70, 70);
+        ctx.fillStyle = "#000";
+        ctx.font = "bold 32px sans-serif";
+        ctx.fillText((firstName[0] || "Q").toUpperCase(), 22, 48);
+        userAvatar.src = canvas.toDataURL();
     }
     const fullName = lastName ? `${firstName} ${lastName}` : firstName;
-    fullNameSpan.innerText = fullName;
-    usernameSpan.innerText = username ? `@${username}` : "";
+    userFullName.innerHTML = `${fullName} ${isPremium ? '<span class="badge">⭐ PREMIUM</span>' : ''}`;
+    userUsernameSpan.innerText = username ? `@${username}` : "";
 
-    // Время и дата
-    function updateDateTime() {
+    // Реферальная ссылка (бот @qowl_bot)
+    const botUsername = "qowl_bot";
+    const refLink = `https://t.me/${botUsername}?start=${userId}`;
+    refLinkInput.value = refLink;
+
+    // Время и погода
+    function updateTime() {
         const now = new Date();
-        const formatted = now.toLocaleString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' });
-        document.getElementById("timeDate").innerHTML = `📅 ${formatted}`;
+        document.getElementById("timeDisplay").innerHTML = `⏰ ${now.toLocaleTimeString()}`;
     }
-    updateDateTime();
-    setInterval(updateDateTime, 60000);
+    updateTime();
+    setInterval(updateTime, 1000);
 
-    // Погода по IP
     async function fetchWeather() {
         try {
             const res = await fetch('https://ipapi.co/json/');
@@ -385,139 +309,33 @@
             const weather = await weatherRes.json();
             const temp = weather.current_condition[0].temp_C;
             const desc = weather.current_condition[0].lang_ru[0].value;
-            document.getElementById("weather").innerHTML = `🌍 ${city} | 🌡️ ${temp}°C ${desc}`;
+            document.getElementById("weatherDisplay").innerHTML = `🌍 ${city} | 🌡️ ${temp}°C ${desc}`;
         } catch(e) {
-            document.getElementById("weather").innerHTML = "🌤️ Погода недоступна";
+            document.getElementById("weatherDisplay").innerHTML = "🌤️ Погода недоступна";
         }
     }
     fetchWeather();
     setInterval(fetchWeather, 600000);
 
-    // При первом запуске – запрашиваем данные о рефералах и достижениях
-    function loadUserData() {
-        sendCommand("get_user_data");
-        // также проверим подписку автоматически
-        sendCommand("check_subscription_silent");
-        // достижение за первый визит (если ещё нет, бот выдаст)
-        sendCommand("first_visit");
-    }
-
-    // Обработка сообщений от бота
-    tg.onEvent('message', (event) => {
-        try {
-            const data = JSON.parse(event.data);
-            if (data.type === "user_data") {
-                refsCount = data.refs_count || 0;
-                refsList = data.refs_list || [];
-                achievements = data.achievements || { first_visit: false, ten_refs: false, subscribed: false };
-                refsCountSpan.innerText = refsCount;
-                const unlockedCount = Object.values(achievements).filter(v => v === true).length;
-                achievementsCountSpan.innerText = unlockedCount;
-                renderAchievements();
-                renderRefsList();
-            } else if (data.type === "refs_list") {
-                refsList = data.list || [];
-                renderRefsList();
-            } else if (data.type === "subscription_result") {
-                if (data.subscribed) {
-                    // обновим достижение
-                    achievements.subscribed = true;
-                    renderAchievements();
-                    tg.showPopup({ title: "✅ Подписка подтверждена", message: "Достижение получено!", buttons: [{ type: "ok" }] });
-                } else {
-                    tg.showPopup({ title: "❌ Не подписан", message: `Подпишитесь: https://t.me/qowlc`, buttons: [{ type: "ok" }] });
-                }
-            } else if (data.type === "achievement_granted") {
-                if (data.achievement === "first_visit") achievements.first_visit = true;
-                if (data.achievement === "subscribed") achievements.subscribed = true;
-                if (data.achievement === "ten_refs") achievements.ten_refs = true;
-                renderAchievements();
-                const unlockedCount = Object.values(achievements).filter(v => v === true).length;
-                achievementsCountSpan.innerText = unlockedCount;
-                tg.showPopup({ title: "🏆 Новое достижение", message: data.message, buttons: [{ type: "ok" }] });
-            } else if (data.type === "refs_count_updated") {
-                refsCount = data.count;
-                refsCountSpan.innerText = refsCount;
-                if (data.achievement_granted) {
-                    achievements.ten_refs = true;
-                    renderAchievements();
-                    tg.showPopup({ title: "🏆 Достижение", message: "10 рефералов! Ты легенда.", buttons: [{ type: "ok" }] });
-                }
-            }
-        } catch(e) { console.error(e); }
-    });
-
-    // Отрисовка достижений
-    function renderAchievements() {
-        const achData = [
-            { id: "first_visit", name: "🌟 Первый визит", desc: "Открыть веб-приложение", icon: "🎁" },
-            { id: "ten_refs", name: "👑 10 рефералов", desc: "Пригласить 10 друзей", icon: "👥" },
-            { id: "subscribed", name: "🔔 Подписка на ТГК", desc: "Подписаться на канал", icon: "📢" }
-        ];
-        achievementsGrid.innerHTML = "";
-        achData.forEach(ach => {
-            const unlocked = achievements[ach.id] === true;
-            const div = document.createElement("div");
-            div.className = `achievement-card ${unlocked ? "unlocked" : "locked"}`;
-            div.innerHTML = `
-                <div class="achievement-icon">${ach.icon}</div>
-                <div class="achievement-title">${ach.name}</div>
-                <div class="achievement-desc">${ach.desc}</div>
-                <div style="margin-top: 8px;">${unlocked ? "✅" : "🔒"}</div>
-            `;
-            achievementsGrid.appendChild(div);
-        });
-    }
-
-    // Отрисовка списка рефералов
-    function renderRefsList() {
-        if (!refsList.length) {
-            refsListContainer.innerHTML = "<div style='text-align:center;padding:20px;'>📭 У вас пока нет рефералов</div>";
-            return;
-        }
-        refsListContainer.innerHTML = "";
-        refsList.forEach(ref => {
-            const div = document.createElement("div");
-            div.className = "ref-item";
-            div.innerHTML = `<span>${ref.name || "Аноним"}</span><span>${ref.date ? ref.date.slice(0,10) : ""}</span>`;
-            refsListContainer.appendChild(div);
-        });
-    }
-
-    // Кнопки
-    document.getElementById("checkSubBtn").onclick = () => {
-        sendCommand("check_subscription");
-    };
-    document.getElementById("refreshRefsBtn").onclick = () => {
-        sendCommand("get_user_data");
-    };
-    document.getElementById("copyRefBtn").onclick = () => {
-        refLinkInput.select();
-        document.execCommand("copy");
-        tg.showPopup({ title: "Скопировано", message: "Реферальная ссылка скопирована", buttons: [{ type: "ok" }] });
-    };
-    document.getElementById("shareRefBtn").onclick = () => {
-        window.open(`https://t.me/share/url?url=${encodeURIComponent(refLink)}&text=Присоединяйся к QOWL Premium!`);
-    };
-    document.getElementById("showRefsBtn").onclick = () => {
-        sendCommand("get_refs_list");
-    };
-
-    // Вкладки
+    // Переключение вкладок
     const tabs = document.querySelectorAll(".tab");
     const contents = document.querySelectorAll(".tab-content");
+    function switchTab(tabId) {
+        contents.forEach(c => c.classList.remove("active"));
+        document.getElementById(tabId).classList.add("active");
+        tabs.forEach(t => t.classList.remove("active"));
+        document.querySelector(`.tab[data-tab="${tabId}"]`).classList.add("active");
+    }
     tabs.forEach(tab => {
         tab.addEventListener("click", () => {
-            const target = tab.getAttribute("data-tab");
-            tabs.forEach(t => t.classList.remove("active"));
-            tab.classList.add("active");
-            contents.forEach(c => c.classList.remove("active"));
-            document.getElementById(target).classList.add("active");
+            const tabId = tab.getAttribute("data-tab");
+            switchTab(tabId);
         });
     });
 
-    // Запуск
-    loadUserData();
+    // АВТОМАТИЧЕСКАЯ ПРОВЕРКА ПОДПИСКИ (при загрузке страницы)
+    // Отправляем боту запрос "check_subscription_auto", бот проверит и выдаст достижение (без уведомления)
+    sendToBot("check_subscription_auto");
 </script>
 </body>
 </html>
