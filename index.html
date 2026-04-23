@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>QOWL World — игры и экономика</title>
+    <title>QOWL World — премиум</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         * {
@@ -11,575 +11,397 @@
             padding: 0;
             box-sizing: border-box;
         }
+
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            background: var(--tg-theme-bg-color, #ffffff);
-            color: var(--tg-theme-text-color, #000000);
+            background: var(--tg-theme-bg-color, #f0f2f5);
+            color: var(--tg-theme-text-color, #1a1a1a);
             padding: 16px;
-            padding-bottom: 80px;
+            padding-bottom: 30px;
+            transition: background 0.2s, color 0.2s;
         }
+
+        /* Карточки */
         .card {
-            background: var(--tg-theme-secondary-bg-color, #f5f5f5);
-            border-radius: 24px;
+            background: var(--tg-theme-secondary-bg-color, #ffffff);
+            border-radius: 28px;
             padding: 20px;
             margin-bottom: 16px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            transition: transform 0.2s, box-shadow 0.2s;
         }
-        .flex-row {
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+        }
+
+        /* Профиль */
+        .profile-header {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 16px;
             flex-wrap: wrap;
         }
-        .space-between {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
         .avatar {
-            width: 64px;
-            height: 64px;
+            width: 70px;
+            height: 70px;
             border-radius: 50%;
             object-fit: cover;
-            border: 2px solid var(--tg-theme-button-color, #2481cc);
+            border: 3px solid var(--tg-theme-button-color, #2b7be4);
+            background: #ccc;
         }
+        .profile-info {
+            flex: 1;
+        }
+        .profile-name {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+        .profile-username {
+            font-size: 0.9rem;
+            color: var(--tg-theme-hint-color, #6c757d);
+        }
+        .balance {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-top: 6px;
+            color: var(--tg-theme-button-color, #2b7be4);
+        }
+
+        /* Кнопки */
         button {
-            background: var(--tg-theme-button-color, #2481cc);
+            background: var(--tg-theme-button-color, #2b7be4);
             color: var(--tg-theme-button-text-color, #ffffff);
             border: none;
             border-radius: 40px;
-            padding: 10px 20px;
+            padding: 12px 24px;
             font-weight: 600;
+            font-size: 0.9rem;
             cursor: pointer;
-            transition: transform 0.1s, opacity 0.2s;
-            font-size: 14px;
+            transition: transform 0.1s, opacity 0.2s, background 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
         }
         button:active {
             transform: scale(0.96);
         }
-        .balance {
-            font-size: 32px;
-            font-weight: bold;
-            color: var(--tg-theme-button-color, #2481cc);
+        .secondary-btn {
+            background: var(--tg-theme-hint-color, #9ca3af);
         }
-        .grid-2 {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
+        .icon-btn {
+            background: transparent;
+            color: var(--tg-theme-button-color, #2b7be4);
+            box-shadow: none;
+            padding: 8px;
         }
-        .achievement {
-            background: var(--tg-theme-bg-color, #fff);
-            border-radius: 16px;
-            padding: 10px;
-            text-align: center;
-            opacity: 0.6;
+        .icon-btn:active {
+            background: rgba(0,0,0,0.05);
         }
-        .achievement.unlocked {
-            opacity: 1;
-            background: #ffe6b3;
-        }
+
+        /* Сетка для вкладок */
         .tabs {
             display: flex;
             gap: 8px;
-            margin-bottom: 16px;
+            margin-bottom: 20px;
             flex-wrap: wrap;
+            justify-content: center;
         }
         .tab {
-            background: var(--tg-theme-secondary-bg-color, #e0e0e0);
-            padding: 8px 16px;
-            border-radius: 30px;
+            background: var(--tg-theme-secondary-bg-color, #e9ecef);
+            padding: 10px 20px;
+            border-radius: 40px;
+            font-weight: 500;
             cursor: pointer;
+            transition: all 0.2s;
+            color: var(--tg-theme-text-color, #1a1a1a);
         }
         .tab.active {
-            background: var(--tg-theme-button-color, #2481cc);
+            background: var(--tg-theme-button-color, #2b7be4);
             color: white;
         }
         .tab-content {
             display: none;
+            animation: fadeIn 0.2s ease;
         }
         .tab-content.active {
             display: block;
         }
-        .weather-currency {
-            font-size: 13px;
-            background: var(--tg-theme-bg-color, #fff);
-            border-radius: 20px;
-            padding: 8px;
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px);}
+            to { opacity: 1; transform: translateY(0);}
         }
+
+        /* Поля ввода */
+        input, .fake-input {
+            width: 100%;
+            padding: 14px 16px;
+            border-radius: 28px;
+            border: 1px solid var(--tg-theme-hint-color, #ced4da);
+            background: var(--tg-theme-bg-color, #ffffff);
+            color: var(--tg-theme-text-color, #1a1a1a);
+            font-size: 1rem;
+            transition: border 0.2s, box-shadow 0.2s;
+            margin-bottom: 12px;
+        }
+        input:focus {
+            outline: none;
+            border-color: var(--tg-theme-button-color, #2b7be4);
+            box-shadow: 0 0 0 3px rgba(43, 123, 228, 0.2);
+        }
+
+        /* Список */
         .ref-item {
-            padding: 6px;
-            border-bottom: 1px solid var(--tg-theme-hint-color, #ccc);
-        }
-        .pagination {
+            padding: 10px 0;
+            border-bottom: 1px solid var(--tg-theme-hint-color, #e9ecef);
             display: flex;
-            justify-content: center;
-            gap: 10px;
-            margin: 12px 0;
+            justify-content: space-between;
+        }
+
+        /* Погода и время */
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 12px;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .weather-time {
+            background: var(--tg-theme-bg-color, #fff);
+            border-radius: 40px;
+            padding: 8px 16px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--tg-theme-hint-color, #6c757d);
+        }
+
+        /* Достижения */
+        .achievement-badge {
+            background: var(--tg-theme-bg-color, #fff);
+            border-radius: 40px;
+            padding: 8px 16px;
+            display: inline-block;
+            margin: 4px;
+            font-size: 0.8rem;
+            border: 1px solid var(--tg-theme-hint-color, #dee2e6);
+        }
+        .achievement-badge.locked {
+            opacity: 0.5;
         }
         footer {
             text-align: center;
-            font-size: 11px;
-            margin-top: 20px;
-            color: var(--tg-theme-hint-color, #aaa);
-        }
-        input, select {
-            padding: 8px;
-            border-radius: 20px;
-            border: 1px solid #ccc;
-            width: 100%;
-            margin: 6px 0;
+            font-size: 0.7rem;
+            color: var(--tg-theme-hint-color, #adb5bd);
+            margin-top: 24px;
         }
     </style>
 </head>
 <body>
 
+<!-- Карточка профиля -->
 <div class="card">
-    <div class="flex-row">
+    <div class="profile-header">
         <img class="avatar" id="userAvatar" src="" alt="avatar">
-        <div>
-            <h2 id="userFullName">Загрузка...</h2>
-            <div id="userUsername"></div>
+        <div class="profile-info">
+            <div class="profile-name" id="userFullName">Загрузка...</div>
+            <div class="profile-username" id="userUsername"></div>
             <div class="balance">💎 <span id="shlakBalance">0</span></div>
         </div>
     </div>
+    <div class="info-row">
+        <div class="weather-time" id="timeDisplay">⏰ --:--:--</div>
+        <div class="weather-time" id="weatherDisplay">🌤️ Загрузка...</div>
+    </div>
 </div>
 
+<!-- Вкладки -->
 <div class="tabs">
     <div class="tab active" data-tab="home">🏠 Главная</div>
-    <div class="tab" data-tab="shop">🏪 Магазин</div>
-    <div class="tab" data-tab="games">🎮 Игры</div>
     <div class="tab" data-tab="referrals">👥 Рефералы</div>
     <div class="tab" data-tab="achievements">🏆 Достижения</div>
-    <div class="tab" data-tab="history">📜 История</div>
-    <div class="tab" data-tab="leaderboard">📊 Топ</div>
-    <div class="tab" data-tab="settings">⚙️ Профиль</div>
+    <div class="tab" data-tab="profile">✏️ Профиль</div>
 </div>
 
+<!-- Главная вкладка -->
 <div id="home" class="tab-content active">
     <div class="card">
-        <div class="weather-currency" id="weatherCurrencyBlock">
-            🌤️ Загрузка погоды...
+        <div class="info-row" style="justify-content: center; gap: 12px;">
+            <button id="checkSubBtn">📌 Проверить подписку</button>
+            <button id="topBtn">🏆 Топ рефералов</button>
+            <button id="myAchievementsBtn">🏅 Мои достижения</button>
         </div>
-        <div style="margin-top: 12px;">
-            👋 Добро пожаловать! Здесь ты можешь играть, покупать скины и повышать лимит рефералов.
+        <div style="margin-top: 20px; text-align: center;">
+            <p>🔗 Твоя реферальная ссылка:</p>
+            <input type="text" id="refLinkInput" readonly style="text-align: center;">
+            <div style="margin-top: 12px;">
+                <button id="copyRefBtn">📋 Копировать</button>
+                <button id="shareRefBtn">📤 Поделиться</button>
+            </div>
         </div>
     </div>
 </div>
 
-<div id="shop" class="tab-content">
-    <div class="card">
-        <div class="grid-2" id="shopItemsContainer"></div>
-    </div>
-</div>
-
-<div id="games" class="tab-content">
-    <div class="card">
-        <h3>🎯 Угадай число (стоимость 5 💎)</h3>
-        <input type="number" id="guessInput" placeholder="1-10">
-        <button id="guessBtn">Угадать</button>
-        <div id="guessResult"></div>
-    </div>
-    <div class="card">
-        <h3>✂️ Камень-ножницы-бумага (5 💎)</h3>
-        <div>
-            <button id="rockBtn">🗻 Камень</button>
-            <button id="paperBtn">📄 Ножницы</button>
-            <button id="scissorsBtn">✂️ Бумага</button>
-        </div>
-        <div id="rpsResult"></div>
-    </div>
-</div>
-
+<!-- Рефералы -->
 <div id="referrals" class="tab-content">
     <div class="card">
-        <div class="space-between">
-            <span>Ваша реферальная ссылка:</span>
-            <button id="copyRefBtn">📋 Копировать</button>
-        </div>
-        <input type="text" id="refLinkInput" readonly style="width:100%; margin: 10px 0;">
-        <button id="shareRefBtn">📤 Поделиться через Telegram</button>
-        <hr>
-        <h4>Приглашённые друзья</h4>
-        <div id="refListContainer"></div>
-        <div class="pagination" id="refPagination"></div>
+        <button id="showRefsBtn">👥 Показать моих рефералов (бот пришлёт в чат)</button>
     </div>
 </div>
 
+<!-- Достижения -->
 <div id="achievements" class="tab-content">
     <div class="card">
-        <div class="grid-2" id="achievementsContainer"></div>
+        <p>⭐ Нажмите «Мои достижения» на главной, чтобы увидеть список.</p>
+        <div id="achievementsPlaceholder"></div>
     </div>
 </div>
 
-<div id="history" class="tab-content">
+<!-- Профиль (смена имени) -->
+<div id="profile" class="tab-content">
     <div class="card">
-        <div id="historyList"></div>
+        <label>Имя (отображается в боте):</label>
+        <input type="text" id="editName" placeholder="Ваше новое имя">
+        <button id="saveProfileBtn">💾 Сохранить имя</button>
+        <p style="font-size: 12px; margin-top: 12px;">После сохранения имя обновится в боте и здесь при перезагрузке.</p>
     </div>
 </div>
 
-<div id="leaderboard" class="tab-content">
-    <div class="card">
-        <div class="tabs" style="margin-bottom: 8px;">
-            <div class="tab active" data-leaderboard="week">🏆 Неделя</div>
-            <div class="tab" data-leaderboard="month">📅 Месяц</div>
-        </div>
-        <div id="leaderboardList"></div>
-    </div>
-</div>
-
-<div id="settings" class="tab-content">
-    <div class="card">
-        <label>Имя (отображается в боте и здесь):</label>
-        <input type="text" id="editName" placeholder="Ваше имя"><br><br>
-        <button id="saveProfileBtn">Сохранить имя</button>
-        <hr>
-        <button id="resetDataBtn" class="danger-btn" style="background:#e55353;">⚠️ Сбросить локальный прогресс</button>
-    </div>
-</div>
-
-<footer>Данные сохраняются на сервере бота. Имя синхронизируется с ботом.</footer>
+<footer>Данные синхронизируются с ботом. Для обновления информации перезагрузите страницу.</footer>
 
 <script>
     const tg = window.Telegram.WebApp;
     tg.ready();
     tg.expand();
 
-    // Пользователь из Telegram
+    // Получаем данные пользователя из Telegram
     let userData = tg.initDataUnsafe?.user || {};
     let userTelegramId = userData.id;
     let userFirstName = userData.first_name || "Гость";
+    let userLastName = userData.last_name || "";
     let userUsername = userData.username || "";
     let userPhotoUrl = userData.photo_url || "";
 
-    // Локальное состояние (всё, кроме рефералов и имени, хранится только в RAM)
-    let state = {
-        shlak: 100,          // начальный капитал для демонстрации
-        dailyStreak: 0,
-        lastDailyDate: null,
-        refs: [],            // загружается из бота
-        refLimit: 10,
-        skin: "🪨",
-        achievements: { firstRef: false, tenRefs: false, subscribed: false, hundredClicks: false, daily7: false },
-        historyLogs: [],
-        clicksTotal: 0,      // для ачивки 100 кликов (клики теперь только через игры? но кликер убран, поэтому оставим)
-        clickHistory: [],
-        displayName: userFirstName,
-        displayUsername: userUsername,
-        subscribedToChannel: true, // имитация, так как проверка в боте
+    // Элементы DOM
+    const userFullNameEl = document.getElementById("userFullName");
+    const userUsernameEl = document.getElementById("userUsername");
+    const userAvatarEl = document.getElementById("userAvatar");
+    const shlakBalanceEl = document.getElementById("shlakBalance"); // баланс пока не используется, но оставим
+    const refLinkInput = document.getElementById("refLinkInput");
+    const editNameInput = document.getElementById("editName");
+    const saveProfileBtn = document.getElementById("saveProfileBtn");
+
+    // Отображение аватарки
+    if (userPhotoUrl) {
+        userAvatarEl.src = userPhotoUrl;
+    } else {
+        // Генерация инициалов
+        const canvas = document.createElement('canvas');
+        canvas.width = 70; canvas.height = 70;
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle = "#2b7be4";
+        ctx.fillRect(0, 0, 70, 70);
+        ctx.fillStyle = "#fff";
+        ctx.font = "bold 32px sans-serif";
+        ctx.fillText((userFirstName[0] || "U").toUpperCase(), 22, 48);
+        userAvatarEl.src = canvas.toDataURL();
+    }
+
+    // Имя и юзернейм
+    const fullName = userLastName ? `${userFirstName} ${userLastName}` : userFirstName;
+    userFullNameEl.innerText = `${fullName} ${userData.is_premium ? '⭐ PREMIUM' : ''}`;
+    userUsernameEl.innerText = userUsername ? `@${userUsername}` : "";
+
+    // Ссылка (бот должен иметь username, замените QOWLBot на реальное)
+    const botUsername = "QOWLBot";
+    const refLink = `https://t.me/${botUsername}?start=${userTelegramId}`;
+    refLinkInput.value = refLink;
+
+    // Копирование и шаринг
+    document.getElementById("copyRefBtn").onclick = () => {
+        refLinkInput.select();
+        document.execCommand("copy");
+        tg.showPopup({ title: "Готово", message: "Ссылка скопирована!", buttons: [{ type: "ok" }] });
+    };
+    document.getElementById("shareRefBtn").onclick = () => {
+        window.open(`https://t.me/share/url?url=${encodeURIComponent(refLink)}&text=Присоединяйся к QOWL World!`);
     };
 
-    // Запрос данных у бота (рефералы и текущее имя)
-    function requestUserDataFromBot() {
-        tg.sendData(JSON.stringify({ type: "get_user_data", user_id: userTelegramId }));
+    // Отправка запросов боту
+    function sendToBot(type, additional = {}) {
+        tg.sendData(JSON.stringify({ type, ...additional }));
     }
 
-    // Отправка нового имени в бот
-    function sendNameToBot(newName) {
-        tg.sendData(JSON.stringify({ type: "update_name", name: newName, user_id: userTelegramId }));
-    }
+    // Кнопки
+    document.getElementById("showRefsBtn").onclick = () => sendToBot("get_refs");
+    document.getElementById("checkSubBtn").onclick = () => sendToBot("check_subscription_web");
+    document.getElementById("topBtn").onclick = () => sendToBot("get_top");
+    document.getElementById("myAchievementsBtn").onclick = () => sendToBot("get_achievements");
 
-    // Обработка входящих сообщений от бота (через Telegram.WebApp.onEvent)
-    tg.onEvent('message', (event) => {
-        try {
-            const data = JSON.parse(event.data);
-            if (data.type === "user_data") {
-                // Бот прислал список рефералов и имя
-                if (data.refs) state.refs = data.refs;
-                if (data.display_name) state.displayName = data.display_name;
-                updateUI();
-                renderRefList(1);
-            }
-        } catch(e) {}
-    });
-
-    // Функции UI
-    function updateUI() {
-        document.getElementById("shlakBalance").innerText = state.shlak;
-        document.getElementById("userFullName").innerHTML = `${state.displayName} ${userData.is_premium ? '<span style="background:gold; border-radius:20px; padding:2px 8px;">⭐ PREMIUM</span>' : ''}`;
-        document.getElementById("userUsername").innerText = state.displayUsername ? `@${state.displayUsername}` : "";
-        if (userPhotoUrl) document.getElementById("userAvatar").src = userPhotoUrl;
-        else {
-            const canvas = document.createElement('canvas');
-            canvas.width = 64; canvas.height = 64;
-            const ctx = canvas.getContext('2d');
-            ctx.fillStyle = "#2481cc";
-            ctx.fillRect(0,0,64,64);
-            ctx.fillStyle = "#fff";
-            ctx.font = "bold 32px sans-serif";
-            ctx.fillText((state.displayName[0]||"U").toUpperCase(), 18, 44);
-            document.getElementById("userAvatar").src = canvas.toDataURL();
-        }
-        renderShop();
-        renderAchievements();
-        renderHistory();
-        renderLeaderboard('week');
-    }
-
-    function addHistory(action, amount = null) {
-        state.historyLogs.unshift({
-            action: action,
-            amount: amount,
-            date: new Date().toISOString()
-        });
-        if (state.historyLogs.length > 100) state.historyLogs.pop();
-        renderHistory();
-    }
-
-    // Магазин
-    const shopItems = [
-        { id: "ref_limit", name: "📈 +5 лимит рефералов", price: 100, type: "refLimit" },
-        { id: "ref_bonus", name: "🎁 +1 бонусный реферал", price: 50, type: "bonusRef" },
-        { id: "skin_cool", name: "✨ Скин: Крутой 🤘", price: 150, type: "skin", emoji: "🤘" },
-        { id: "skin_gold", name: "🌟 Скин: Золотой 💛", price: 300, type: "skin", emoji: "💛" }
-    ];
-    function renderShop() {
-        const container = document.getElementById("shopItemsContainer");
-        if (!container) return;
-        container.innerHTML = "";
-        shopItems.forEach(item => {
-            const btn = document.createElement("button");
-            btn.innerText = `${item.name} — ${item.price} 💎`;
-            btn.onclick = () => buyItem(item);
-            container.appendChild(btn);
-        });
-    }
-    function buyItem(item) {
-        if (state.shlak < item.price) {
-            alert("Не хватает шлакоблоков");
-            return;
-        }
-        state.shlak -= item.price;
-        if (item.type === "refLimit") {
-            state.refLimit += 5;
-            addHistory(`Покупка: +5 лимит рефералов (теперь ${state.refLimit})`, -item.price);
-        } else if (item.type === "bonusRef") {
-            // добавляем бонусного реферала (локально, но для синхронизации с ботом нужно отправлять)
-            const newRef = { name: "Бонусный друг", date: new Date().toISOString() };
-            state.refs.push(newRef);
-            addHistory(`Покупка: +1 бонусный реферал`, -item.price);
-        } else if (item.type === "skin") {
-            state.skin = item.emoji;
-            addHistory(`Покупка скина ${item.name}`, -item.price);
-        }
-        updateUI();
-    }
-
-    // Рефералы с пагинацией (без ручного добавления, только загруженные из бота)
-    let currentRefPage = 1;
-    const refsPerPage = 5;
-    function renderRefList(page) {
-        if (!state.refs) state.refs = [];
-        const start = (page-1)*refsPerPage;
-        const end = start + refsPerPage;
-        const paginated = state.refs.slice(start, end);
-        const container = document.getElementById("refListContainer");
-        if (!container) return;
-        container.innerHTML = "";
-        paginated.forEach(ref => {
-            const div = document.createElement("div");
-            div.className = "ref-item";
-            div.innerText = `${ref.name || ref.username || "Неизвестный"} (приглашён: ${new Date(ref.date).toLocaleDateString()})`;
-            container.appendChild(div);
-        });
-        const totalPages = Math.ceil(state.refs.length / refsPerPage);
-        const pagDiv = document.getElementById("refPagination");
-        if (pagDiv) {
-            pagDiv.innerHTML = "";
-            if (page > 1) {
-                const prevBtn = document.createElement("button");
-                prevBtn.innerText = "◀";
-                prevBtn.onclick = () => { currentRefPage--; renderRefList(currentRefPage); };
-                pagDiv.appendChild(prevBtn);
-            }
-            pagDiv.appendChild(document.createTextNode(`Страница ${page} из ${totalPages||1}`));
-            if (page < totalPages) {
-                const nextBtn = document.createElement("button");
-                nextBtn.innerText = "▶";
-                nextBtn.onclick = () => { currentRefPage++; renderRefList(currentRefPage); };
-                pagDiv.appendChild(nextBtn);
-            }
-        }
-    }
-
-    // Достижения (упрощённо, без сохранения)
-    const achList = [
-        { id: "firstRef", name: "Первый реферал", reward: 10 },
-        { id: "tenRefs", name: "10 рефералов", reward: 50 },
-        { id: "subscribed", name: "Подписка на канал", reward: 5 },
-        { id: "hundredClicks", name: "100 кликов", reward: 20 },
-        { id: "daily7", name: "Серия 7 дней", reward: 30 }
-    ];
-    function renderAchievements() {
-        const container = document.getElementById("achievementsContainer");
-        if (!container) return;
-        container.innerHTML = "";
-        achList.forEach(ach => {
-            const div = document.createElement("div");
-            div.className = `achievement ${state.achievements[ach.id] ? "unlocked" : ""}`;
-            div.innerHTML = `<b>${ach.name}</b><br>+${ach.reward} 💎<br>${state.achievements[ach.id] ? "✅" : "🔒"}`;
-            container.appendChild(div);
-        });
-    }
-
-    function renderHistory() {
-        const container = document.getElementById("historyList");
-        if (!container) return;
-        container.innerHTML = "";
-        state.historyLogs.slice(0, 20).forEach(log => {
-            const d = new Date(log.date);
-            container.innerHTML += `<div>${d.toLocaleString()} — ${log.action} ${log.amount ? `(${log.amount>0?`+${log.amount}`:log.amount} 💎)` : ''}</div>`;
-        });
-    }
-
-    function renderLeaderboard(period) {
-        const now = new Date();
-        let filtered = state.clickHistory.filter(click => {
-            const d = new Date(click.date);
-            if (period === 'week') return (now - d) <= 7*24*3600000;
-            else return (now - d) <= 30*24*3600000;
-        });
-        const totalClicks = filtered.reduce((sum, c) => sum + c.clicks, 0);
-        const container = document.getElementById("leaderboardList");
-        if (container) container.innerHTML = `<div>🥇 Ваши клики за период: ${totalClicks}</div><div>Топ других пользователей пока недоступен (локальная версия).</div>`;
-    }
-
-    // Игры (без ограничений)
-    function guessNumber() {
-        if (state.shlak < 5) { alert("Нужно 5 шлакоблоков"); return; }
-        const guess = parseInt(document.getElementById("guessInput").value);
-        if (isNaN(guess) || guess<1 || guess>10) { alert("Число от 1 до 10"); return; }
-        const target = Math.floor(Math.random()*10)+1;
-        state.shlak -= 5;
-        let win = 0;
-        if (guess === target) {
-            win = 15;
-            state.shlak += win;
-            addHistory(`🎮 Угадай число (угадал ${target})`, win-5);
-        } else {
-            addHistory(`🎮 Угадай число (проигрыш, было ${target})`, -5);
-        }
-        updateUI();
-        document.getElementById("guessResult").innerHTML = win ? `✅ Вы угадали! +${win} 💎` : `❌ Не угадали! Было ${target}. -5 💎`;
-    }
-    function playRPS(userChoice) {
-        if (state.shlak < 5) { alert("Нужно 5 шлакоблоков"); return; }
-        const choices = ["rock","paper","scissors"];
-        const botChoice = choices[Math.floor(Math.random()*3)];
-        let win = false;
-        if ((userChoice === "rock" && botChoice === "scissors") ||
-            (userChoice === "paper" && botChoice === "rock") ||
-            (userChoice === "scissors" && botChoice === "paper")) win = true;
-        state.shlak -= 5;
-        let reward = 0;
-        if (win) { reward = 12; state.shlak += reward; }
-        addHistory(`✂️ КНБ (${userChoice} vs ${botChoice}) ${win?"выигрыш":"проигрыш"}`, win ? reward-5 : -5);
-        updateUI();
-        document.getElementById("rpsResult").innerHTML = win ? `✅ Победа! +${reward} 💎` : `❌ Поражение! -5 💎 (бот выбрал ${botChoice})`;
-    }
-
-    // Редактирование профиля с отправкой в бот
-    function saveProfile() {
-        const newName = document.getElementById("editName").value.trim();
-        if (newName && newName !== state.displayName) {
-            state.displayName = newName;
-            sendNameToBot(newName);
-            addHistory("✏️ Изменил имя", 0);
-            updateUI();
-            alert("Имя обновлено и отправлено боту");
+    // Сохранение имени
+    saveProfileBtn.onclick = () => {
+        const newName = editNameInput.value.trim();
+        if (newName && newName !== fullName) {
+            sendToBot("update_name", { name: newName });
+            alert("Запрос на смену имени отправлен боту. Новое имя появится в боте.");
         } else if (!newName) {
             alert("Введите имя");
         } else {
             alert("Имя не изменилось");
         }
-    }
-
-    function resetLocalProgress() {
-        if (confirm("Сбросить локальный прогресс (шлакоблоки, историю, достижения)? Имя и рефералы синхронизируются с ботом заново.")) {
-            state.shlak = 100;
-            state.dailyStreak = 0;
-            state.lastDailyDate = null;
-            state.achievements = { firstRef: false, tenRefs: false, subscribed: false, hundredClicks: false, daily7: false };
-            state.historyLogs = [];
-            state.clicksTotal = 0;
-            state.clickHistory = [];
-            state.skin = "🪨";
-            state.refLimit = 10;
-            updateUI();
-            addHistory("Локальный прогресс сброшен", 0);
-            requestUserDataFromBot(); // перезагрузим рефералов и имя из бота
-        }
-    }
-
-    // Погода и курс
-    async function fetchWeatherCurrency() {
-        try {
-            const weatherResp = await fetch("https://wttr.in/Москва?format=j1&lang=ru");
-            const weatherData = await weatherResp.json();
-            const temp = weatherData.current_condition[0].temp_C;
-            const currencyResp = await fetch("https://api.exchangerate-api.com/v4/latest/USD");
-            const currencyData = await currencyResp.json();
-            const rub = currencyData.rates.RUB;
-            document.getElementById("weatherCurrencyBlock").innerHTML = `🌡️ Москва: ${temp}°C | 💵 USD/RUB: ${rub.toFixed(2)}`;
-        } catch(e) {
-            document.getElementById("weatherCurrencyBlock").innerHTML = "🌤️ Погода и курс временно недоступны";
-        }
-    }
-    fetchWeatherCurrency();
-    setInterval(fetchWeatherCurrency, 600000);
-
-    // Ссылка
-    function updateRefLink() {
-        const botUsername = "QOWLBot"; // замените на вашего бота
-        const link = `https://t.me/${botUsername}?start=${userTelegramId}`;
-        const input = document.getElementById("refLinkInput");
-        if (input) input.value = link;
-    }
-    function copyRefLink() {
-        const input = document.getElementById("refLinkInput");
-        input.select();
-        document.execCommand("copy");
-        alert("Ссылка скопирована!");
-    }
-    function shareRefLink() {
-        const link = document.getElementById("refLinkInput").value;
-        window.open(`https://t.me/share/url?url=${encodeURIComponent(link)}&text=Присоединяйся к QOWL!`);
-    }
-
-    // Обработчики событий
-    document.getElementById("guessBtn").onclick = guessNumber;
-    document.getElementById("rockBtn").onclick = () => playRPS("rock");
-    document.getElementById("paperBtn").onclick = () => playRPS("paper");
-    document.getElementById("scissorsBtn").onclick = () => playRPS("scissors");
-    document.getElementById("copyRefBtn").onclick = copyRefLink;
-    document.getElementById("shareRefBtn").onclick = shareRefLink;
-    document.getElementById("saveProfileBtn").onclick = saveProfile;
-    document.getElementById("resetDataBtn").onclick = resetLocalProgress;
+    };
 
     // Вкладки
     const tabs = document.querySelectorAll(".tab");
+    const contents = document.querySelectorAll(".tab-content");
     tabs.forEach(tab => {
         tab.addEventListener("click", () => {
-            const targetTab = tab.dataset.tab || tab.dataset.leaderboard;
-            document.querySelectorAll(".tab-content").forEach(tc => tc.classList.remove("active"));
-            document.getElementById(targetTab).classList.add("active");
+            const target = tab.dataset.tab;
             tabs.forEach(t => t.classList.remove("active"));
             tab.classList.add("active");
-            if (targetTab === "leaderboard") renderLeaderboard('week');
-            if (targetTab === "referrals") renderRefList(currentRefPage);
-        });
-    });
-    document.querySelectorAll("[data-leaderboard]").forEach(lb => {
-        lb.addEventListener("click", (e) => {
-            const period = e.target.dataset.leaderboard;
-            renderLeaderboard(period);
+            contents.forEach(c => c.classList.remove("active"));
+            document.getElementById(target).classList.add("active");
         });
     });
 
-    // Старт
-    updateRefLink();
-    requestUserDataFromBot();
-    updateUI();
-    renderRefList(1);
+    // Отображение времени (локальное)
+    function updateTime() {
+        const now = new Date();
+        const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        document.getElementById("timeDisplay").innerHTML = `⏰ ${timeStr}`;
+    }
+    updateTime();
+    setInterval(updateTime, 1000);
+
+    // Погода по геолокации (определяем город через IP, затем погоду)
+    async function getWeather() {
+        try {
+            // 1. Определяем город по IP
+            const ipRes = await fetch('https://ipapi.co/json/');
+            const ipData = await ipRes.json();
+            const city = ipData.city || "Москва";
+            const country = ipData.country_name || "";
+            const location = city + (country ? `, ${country}` : "");
+            // 2. Запрашиваем погоду
+            const weatherRes = await fetch(`https://wttr.in/${city}?format=j1&lang=ru`);
+            const weatherData = await weatherRes.json();
+            const temp = weatherData.current_condition[0].temp_C;
+            const condition = weatherData.current_condition[0].lang_ru[0].value;
+            document.getElementById("weatherDisplay").innerHTML = `🌍 ${location} | 🌡️ ${temp}°C ${condition}`;
+        } catch(e) {
+            document.getElementById("weatherDisplay").innerHTML = "🌤️ Погода: временно недоступна";
+        }
+    }
+    getWeather();
+    setInterval(getWeather, 600000); // каждые 10 минут
+
+    // Обработка входящих сообщений от бота (не используется, но можно оставить)
+    tg.onEvent('message', (event) => {
+        // Можно обработать, если бот будет слать данные обратно, но по условию мы не используем
+        console.log("Получено от бота:", event);
+    });
 </script>
 </body>
 </html>
