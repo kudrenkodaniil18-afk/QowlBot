@@ -86,12 +86,6 @@
             margin-bottom: 12px;
         }
         input:focus { outline: none; border-color: #2b7be4; box-shadow: 0 0 0 3px rgba(43,123,228,0.2); }
-        .ref-item {
-            padding: 10px 0;
-            border-bottom: 1px solid #e9ecef;
-            display: flex;
-            justify-content: space-between;
-        }
         .info-row {
             display: flex;
             justify-content: space-between;
@@ -131,10 +125,10 @@
     <div class="tab" data-tab="referrals">👥 Рефералы</div>
     <div class="tab" data-tab="achievements">🏆 Достижения</div>
     <div class="tab" data-tab="profile">✏️ Профиль</div>
-    <!-- админ-табы будут добавлены динамически -->
+    <!-- админ-таб будет добавлен динамически, если передан параметр admin=1 -->
 </div>
 
-<!-- Главная -->
+<!-- Основные вкладки -->
 <div id="home" class="tab-content active">
     <div class="card">
         <div class="info-row" style="justify-content: center; gap: 12px;">
@@ -153,21 +147,18 @@
     </div>
 </div>
 
-<!-- Рефералы -->
 <div id="referrals" class="tab-content">
     <div class="card">
         <button id="showRefsBtn">👥 Показать моих рефералов (бот пришлёт в чат)</button>
     </div>
 </div>
 
-<!-- Достижения -->
 <div id="achievements" class="tab-content">
     <div class="card">
-        <p>⭐ Нажмите «Мои достижения» на главной.</p>
+        <p>⭐ Нажмите «Мои достижения» на главной, чтобы увидеть список.</p>
     </div>
 </div>
 
-<!-- Профиль (смена имени) -->
 <div id="profile" class="tab-content">
     <div class="card">
         <label>Имя (отображается в боте):</label>
@@ -176,8 +167,8 @@
     </div>
 </div>
 
-<!-- Админ-панель (скрыта по умолчанию) -->
-<div id="admin" class="tab-content">
+<!-- Админ-панель (будет показана только для админов) -->
+<div id="admin" class="tab-content" style="display: none;">
     <div class="card">
         <h3>📢 Рассылка</h3>
         <input type="text" id="bcHeader" placeholder="Заголовок рассылки">
@@ -208,13 +199,16 @@
     tg.ready();
     tg.expand();
 
+    // Определяем, является ли пользователь админом (по параметру URL)
+    const urlParams = new URLSearchParams(window.location.search);
+    const isAdmin = urlParams.get('admin') === '1';
+
     let userData = tg.initDataUnsafe?.user || {};
     let userTelegramId = userData.id;
     let userFirstName = userData.first_name || "Гость";
     let userLastName = userData.last_name || "";
     let userUsername = userData.username || "";
     let userPhotoUrl = userData.photo_url || "";
-    let isAdmin = false;  // будет установлено при старте
 
     // Элементы DOM
     const userFullNameEl = document.getElementById("userFullName");
@@ -230,61 +224,30 @@
     const copyRefBtn = document.getElementById("copyRefBtn");
     const shareRefBtn = document.getElementById("shareRefBtn");
 
-    // Админские элементы
-    const startBroadcastBtn = document.getElementById("startBroadcastBtn");
-    const searchUserBtn = document.getElementById("searchUserBtn");
-    const banUserBtn = document.getElementById("banUserBtn");
-    const unbanUserBtn = document.getElementById("unbanUserBtn");
-    const statsBtn = document.getElementById("statsBtn");
+    // Админские элементы (если админ)
+    let startBroadcastBtn, searchUserBtn, banUserBtn, unbanUserBtn, statsBtn;
+    if (isAdmin) {
+        startBroadcastBtn = document.getElementById("startBroadcastBtn");
+        searchUserBtn = document.getElementById("searchUserBtn");
+        banUserBtn = document.getElementById("banUserBtn");
+        unbanUserBtn = document.getElementById("unbanUserBtn");
+        statsBtn = document.getElementById("statsBtn");
+        // Показать админ-вкладку
+        const tabsContainer = document.getElementById("tabsContainer");
+        const adminTab = document.createElement("div");
+        adminTab.className = "tab";
+        adminTab.setAttribute("data-tab", "admin");
+        adminTab.innerText = "⚙️ Админ";
+        tabsContainer.appendChild(adminTab);
+        adminTab.addEventListener("click", () => switchTab("admin"));
+        // Показать контент админки
+        document.getElementById("admin").style.display = "block";
+    }
 
     // Функция отправки команды боту
     function sendToBot(type, additional = {}) {
         tg.sendData(JSON.stringify({ type, ...additional }));
     }
-
-    // Запрос данных о пользователе (включая isAdmin)
-    function requestUserInfo() {
-        sendToBot("get_user_info");
-    }
-
-    // Обработка ответов от бота (через событие message)
-    tg.onEvent('message', (event) => {
-        try {
-            const data = JSON.parse(event.data);
-            if (data.type === "user_info") {
-                isAdmin = data.is_admin === true;
-                if (isAdmin) {
-                    // Показать админ-вкладку
-                    const tabsContainer = document.getElementById("tabsContainer");
-                    let adminTab = document.querySelector('.tab[data-tab="admin"]');
-                    if (!adminTab) {
-                        const newTab = document.createElement("div");
-                        newTab.className = "tab";
-                        newTab.setAttribute("data-tab", "admin");
-                        newTab.innerText = "⚙️ Админ";
-                        tabsContainer.appendChild(newTab);
-                        newTab.addEventListener("click", () => switchTab("admin"));
-                        // Добавить контент, если ещё нет
-                        if (!document.getElementById("admin")) {
-                            const adminDiv = document.createElement("div");
-                            adminDiv.id = "admin";
-                            adminDiv.className = "tab-content";
-                            adminDiv.innerHTML = document.getElementById("admin").outerHTML;
-                            document.body.appendChild(adminDiv);
-                        }
-                    }
-                }
-                // Обновить отображаемое имя, если есть
-                if (data.display_name) {
-                    userFullNameEl.innerText = `${data.display_name} ${userData.is_premium ? '⭐ PREMIUM' : ''}`;
-                }
-            } else if (data.type === "search_result") {
-                alert(data.text);
-            } else if (data.type === "broadcast_result") {
-                alert(data.text);
-            }
-        } catch(e) {}
-    });
 
     // Переключение вкладок
     function switchTab(tabId) {
@@ -294,7 +257,7 @@
         document.querySelector(`.tab[data-tab="${tabId}"]`).classList.add("active");
     }
 
-    // Обработчики
+    // Обработчики для всех кнопок
     copyRefBtn.onclick = () => {
         refLinkInput.select();
         document.execCommand("copy");
@@ -315,40 +278,32 @@
     };
 
     // Админ-функции
-    if (startBroadcastBtn) {
+    if (isAdmin && startBroadcastBtn) {
         startBroadcastBtn.onclick = () => {
             const header = document.getElementById("bcHeader").value;
             const text = document.getElementById("bcText").value;
             if (header && text) sendToBot("start_broadcast", { header, text });
             else alert("Заполните заголовок и текст");
         };
-    }
-    if (searchUserBtn) {
         searchUserBtn.onclick = () => {
             const query = document.getElementById("searchUserId").value.trim();
             if (query) sendToBot("search_user", { query });
             else alert("Введите ID или username");
         };
-    }
-    if (banUserBtn) {
         banUserBtn.onclick = () => {
             const uid = document.getElementById("banUserId").value.trim();
             if (uid && /^\d+$/.test(uid)) sendToBot("ban_user", { user_id: parseInt(uid) });
             else alert("Введите числовой ID");
         };
-    }
-    if (unbanUserBtn) {
         unbanUserBtn.onclick = () => {
             const uid = document.getElementById("banUserId").value.trim();
             if (uid && /^\d+$/.test(uid)) sendToBot("unban_user", { user_id: parseInt(uid) });
             else alert("Введите числовой ID");
         };
-    }
-    if (statsBtn) {
         statsBtn.onclick = () => sendToBot("get_stats");
     }
 
-    // Отображение аватарки и имени
+    // Отображение аватарки
     if (userPhotoUrl) userAvatarEl.src = userPhotoUrl;
     else {
         const canvas = document.createElement('canvas');
@@ -364,7 +319,7 @@
     const fullName = userLastName ? `${userFirstName} ${userLastName}` : userFirstName;
     userFullNameEl.innerText = `${fullName} ${userData.is_premium ? '⭐ PREMIUM' : ''}`;
     userUsernameEl.innerText = userUsername ? `@${userUsername}` : "";
-    const botUsername = "QOWLBot"; // замените на вашего бота
+    const botUsername = "QOWLBot"; // замените на имя вашего бота
     refLinkInput.value = `https://t.me/${botUsername}?start=${userTelegramId}`;
 
     // Время и погода
@@ -391,9 +346,6 @@
     }
     getWeather();
     setInterval(getWeather, 600000);
-
-    // Запрос прав администратора при старте
-    requestUserInfo();
 </script>
 </body>
 </html>
