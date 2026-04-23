@@ -3,77 +3,196 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>QOWL Кликер</title>
+    <title>QOWL Кликер — премиум</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        body {
-            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            background: var(--tg-theme-bg-color, #ffffff);
-            color: var(--tg-theme-text-color, #000000);
+        * {
             margin: 0;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
+            padding: 0;
             box-sizing: border-box;
         }
-        .clicker {
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background: var(--tg-theme-bg-color, #ffffff);
+            color: var(--tg-theme-text-color, #000000);
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .card {
+            max-width: 400px;
+            width: 100%;
+            background: var(--tg-theme-secondary-bg-color, #f5f5f5);
+            border-radius: 28px;
+            padding: 24px 20px 30px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
             text-align: center;
+            transition: all 0.2s ease;
+        }
+
+        /* Аватарка */
+        .avatar {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin: 0 auto 12px;
+            border: 3px solid var(--tg-theme-button-color, #2481cc);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            background: #ccc;
+        }
+
+        .user-name {
+            font-size: 1.6rem;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+
+        .user-username {
+            font-size: 0.9rem;
+            color: var(--tg-theme-hint-color, #8e8e8e);
+            margin-bottom: 20px;
+        }
+
+        /* Счётчик */
+        .counter-wrapper {
+            background: var(--tg-theme-bg-color, #ffffff);
+            border-radius: 60px;
+            padding: 15px 20px;
+            margin: 20px 0;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.05), 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .counter-label {
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 500;
+            color: var(--tg-theme-hint-color, #8e8e8e);
         }
         .counter {
-            font-size: 3rem;
-            font-weight: bold;
-            margin-bottom: 30px;
+            font-size: 3.6rem;
+            font-weight: 800;
             color: var(--tg-theme-button-color, #2481cc);
+            line-height: 1.2;
         }
-        button {
+
+        /* Кнопка клика */
+        .click-btn {
             background: var(--tg-theme-button-color, #2481cc);
             color: var(--tg-theme-button-text-color, #ffffff);
             border: none;
-            border-radius: 16px;
-            padding: 16px 32px;
-            font-size: 1.8rem;
+            border-radius: 60px;
+            padding: 16px 24px;
+            font-size: 1.5rem;
             font-weight: bold;
+            width: 100%;
             cursor: pointer;
-            transition: transform 0.1s ease;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            transition: transform 0.1s ease, opacity 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-top: 10px;
         }
-        button:active {
-            transform: scale(0.96);
+        .click-btn:active {
+            transform: scale(0.97);
         }
-        .info {
-            margin-top: 40px;
-            font-size: 0.8rem;
-            color: var(--tg-theme-hint-color, #999);
-            text-align: center;
+
+        /* Дополнительная инфа */
+        .info-text {
+            font-size: 0.75rem;
+            color: var(--tg-theme-hint-color, #aaa);
+            margin-top: 24px;
+            border-top: 1px solid var(--tg-theme-hint-color, #ddd);
+            padding-top: 16px;
+        }
+
+        /* Премиум бейдж */
+        .premium-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #f5af19, #f12711);
+            color: white;
+            font-size: 0.7rem;
+            font-weight: bold;
+            padding: 4px 10px;
+            border-radius: 30px;
+            margin-left: 8px;
+            vertical-align: middle;
         }
     </style>
 </head>
 <body>
-<div class="clicker">
-    <div class="counter" id="counter">0</div>
-    <button id="clickBtn">🔘 КЛИК!</button>
-    <div class="info">Нажимай – бот получит уведомление</div>
+<div class="card">
+    <!-- Аватарка будет вставлена через JS -->
+    <img class="avatar" id="userAvatar" src="" alt="avatar">
+    <div class="user-name" id="userName"></div>
+    <div class="user-username" id="userUsername"></div>
+
+    <div class="counter-wrapper">
+        <div class="counter-label">ТВОИ КЛИКИ</div>
+        <div class="counter" id="counter">0</div>
+    </div>
+
+    <button class="click-btn" id="clickBtn">
+        🔘 КЛИКНИ!
+    </button>
+
+    <div class="info-text">
+        ⚡ 1 клик = 1 очко<br>
+        📨 Каждый клик – бот получает уведомление
+    </div>
 </div>
 
 <script>
+    const tg = window.Telegram.WebApp;
+    tg.ready();
+    tg.expand(); // на весь экран
+
+    // Получаем данные пользователя
+    const user = tg.initDataUnsafe?.user || {};
+    const firstName = user.first_name || 'Гость';
+    const lastName = user.last_name || '';
+    const username = user.username ? '@' + user.username : '';
+    const photoUrl = user.photo_url || 'https://placehold.co/200x200?text=QOWL'; // заглушка, если нет фото
+
+    // Отображаем имя + ник + аватар
+    const fullName = lastName ? `${firstName} ${lastName}` : firstName;
+    document.getElementById('userName').innerHTML = `${fullName} ${user.is_premium ? '<span class="premium-badge">⭐ PREMIUM</span>' : ''}`;
+    document.getElementById('userUsername').innerText = username || 'нет username';
+    const avatarImg = document.getElementById('userAvatar');
+    if (photoUrl && photoUrl !== '') {
+        avatarImg.src = photoUrl;
+    } else {
+        // Создаём градиентную заглушку с инициалами, если фото нет
+        const canvas = document.createElement('canvas');
+        canvas.width = 200;
+        canvas.height = 200;
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle = '#2481cc';
+        ctx.fillRect(0, 0, 200, 200);
+        ctx.fillStyle = '#ffffff';
+        ctx.font = 'bold 80px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        const initial = firstName.charAt(0).toUpperCase();
+        ctx.fillText(initial, 100, 100);
+        avatarImg.src = canvas.toDataURL();
+    }
+
+    // Логика кликера
     let count = 0;
     const counterEl = document.getElementById('counter');
     const btn = document.getElementById('clickBtn');
 
-    // Инициализация WebApp
-    const tg = window.Telegram.WebApp;
-    tg.ready();
-    tg.expand(); // разворачиваем на весь экран
-
     btn.addEventListener('click', () => {
         count++;
         counterEl.innerText = count;
-        // Отправляем событие боту (можно отправить просто 'click' или счёт)
+        // Отправляем данные боту
         tg.sendData(JSON.stringify({ action: 'click', total: count }));
-        // Вибрация (если поддерживается)
         if (tg.HapticFeedback) {
             tg.HapticFeedback.impactOccurred('light');
         }
