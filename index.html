@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>QOWL Кликер</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        body {
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background: var(--tg-theme-bg-color, #ffffff);
+            color: var(--tg-theme-text-color, #000000);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            box-sizing: border-box;
+        }
+        .clicker {
+            text-align: center;
+        }
+        .counter {
+            font-size: 3rem;
+            font-weight: bold;
+            margin-bottom: 30px;
+            color: var(--tg-theme-button-color, #2481cc);
+        }
+        button {
+            background: var(--tg-theme-button-color, #2481cc);
+            color: var(--tg-theme-button-text-color, #ffffff);
+            border: none;
+            border-radius: 16px;
+            padding: 16px 32px;
+            font-size: 1.8rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.1s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        button:active {
+            transform: scale(0.96);
+        }
+        .info {
+            margin-top: 40px;
+            font-size: 0.8rem;
+            color: var(--tg-theme-hint-color, #999);
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+<div class="clicker">
+    <div class="counter" id="counter">0</div>
+    <button id="clickBtn">🔘 КЛИК!</button>
+    <div class="info">Нажимай – бот получит уведомление</div>
+</div>
+
+<script>
+    let count = 0;
+    const counterEl = document.getElementById('counter');
+    const btn = document.getElementById('clickBtn');
+
+    // Инициализация WebApp
+    const tg = window.Telegram.WebApp;
+    tg.ready();
+    tg.expand(); // разворачиваем на весь экран
+
+    btn.addEventListener('click', () => {
+        count++;
+        counterEl.innerText = count;
+        // Отправляем событие боту (можно отправить просто 'click' или счёт)
+        tg.sendData(JSON.stringify({ action: 'click', total: count }));
+        // Вибрация (если поддерживается)
+        if (tg.HapticFeedback) {
+            tg.HapticFeedback.impactOccurred('light');
+        }
+    });
+</script>
+</body>
+</html>
