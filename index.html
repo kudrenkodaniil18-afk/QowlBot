@@ -1,55 +1,427 @@
 <!DOCTYPE html>
-<html>
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Диагностика связи</title>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>QOWL World — Премиум</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background: #0a0a0a;
+            color: #fff;
+            padding: 16px;
+            padding-bottom: 40px;
+        }
+        .card {
+            background: #121212;
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: 24px;
+            padding: 18px;
+            margin-bottom: 16px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+        .profile-header {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+        .avatar {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #d4af37;
+            background: #1a1a1a;
+        }
+        .profile-name {
+            font-size: 1.4rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #fff, #d4af37);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        .profile-username {
+            font-size: 0.8rem;
+            color: #aaa;
+            margin-top: 4px;
+        }
+        .badge {
+            background: #d4af37;
+            color: #000;
+            border-radius: 30px;
+            padding: 2px 10px;
+            font-size: 0.65rem;
+            font-weight: bold;
+            margin-left: 8px;
+        }
+        button {
+            background: linear-gradient(135deg, #d4af37, #b8942e);
+            border: none;
+            border-radius: 40px;
+            padding: 10px 18px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: #0a0a0a;
+            cursor: pointer;
+            transition: 0.1s;
+            margin: 4px;
+        }
+        button:active { transform: scale(0.96); }
+        .secondary-btn { background: #2a2a2a; color: #d4af37; border: 1px solid #d4af37; }
+        .danger-btn { background: #8b0000; color: #fff; }
+        .tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+            overflow-x: auto;
+            white-space: nowrap;
+            padding-bottom: 4px;
+            -webkit-overflow-scrolling: touch;
+        }
+        .tab {
+            background: #1a1a1a;
+            padding: 8px 18px;
+            border-radius: 40px;
+            font-weight: 500;
+            cursor: pointer;
+            border: 1px solid #333;
+            color: #ccc;
+            flex-shrink: 0;
+        }
+        .tab.active {
+            background: #d4af37;
+            color: #0a0a0a;
+            border-color: #d4af37;
+        }
+        .tab-content { display: none; animation: fade 0.2s; }
+        .tab-content.active { display: block; }
+        @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
+        input, textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border-radius: 28px;
+            border: 1px solid #444;
+            background: #111;
+            color: #fff;
+            font-size: 1rem;
+            margin-bottom: 12px;
+        }
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: #d4af37;
+        }
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 14px;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .weather-time {
+            background: #111;
+            border-radius: 40px;
+            padding: 6px 14px;
+            font-size: 0.75rem;
+            color: #d4af37;
+            border: 1px solid #333;
+        }
+        footer {
+            text-align: center;
+            font-size: 0.65rem;
+            margin-top: 20px;
+            color: #555;
+        }
+    </style>
 </head>
 <body>
-    <h2>Диагностика WebApp → Бот</h2>
-    <div id="log"></div>
-    <button id="btn">Отправить через tg.sendData</button>
-    <button id="btn2">Отправить через HTTP API</button>
-    <script>
-        function log(msg) {
-            const div = document.getElementById('log');
-            div.innerHTML += `<p>${new Date().toLocaleTimeString()}: ${msg}</p>`;
-        }
-        const tg = Telegram.WebApp;
+
+<div class="card">
+    <div class="profile-header">
+        <img class="avatar" id="userAvatar" src="" alt="avatar">
+        <div>
+            <div class="profile-name" id="userFullName">Загрузка...</div>
+            <div class="profile-username" id="userUsername"></div>
+        </div>
+    </div>
+    <div class="info-row">
+        <div class="weather-time" id="timeDisplay">⏰ --:--:--</div>
+        <div class="weather-time" id="weatherDisplay">🌤️ Загрузка...</div>
+    </div>
+</div>
+
+<div class="tabs" id="tabsContainer">
+    <div class="tab active" data-tab="home">🏠 Главная</div>
+    <div class="tab" data-tab="referrals">👥 Рефералы</div>
+    <div class="tab" data-tab="achievements">🏆 Достижения</div>
+    <div class="tab" data-tab="profile">✏️ Профиль</div>
+    <div class="tab" data-tab="admin" style="display:none" id="adminTab">⚙️ Админ</div>
+</div>
+
+<div id="home" class="tab-content active">
+    <div class="card">
+        <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 8px;">
+            <button id="checkSubBtn">📌 Проверить подписку</button>
+            <button id="topBtn">🏆 Топ рефералов</button>
+            <button id="myAchievementsBtn">🏅 Достижения</button>
+        </div>
+        <div style="margin-top: 18px; text-align: center;">
+            <p>🔗 Реферальная ссылка:</p>
+            <input type="text" id="refLinkInput" readonly style="text-align: center;">
+            <div style="margin-top: 10px;">
+                <button id="copyRefBtn">📋 Копировать</button>
+                <button id="shareRefBtn">📤 Поделиться</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="referrals" class="tab-content">
+    <div class="card">
+        <button id="showRefsBtn" style="width:100%">👥 Показать рефералов</button>
+    </div>
+</div>
+
+<div id="achievements" class="tab-content">
+    <div class="card">
+        <p>✨ Нажмите «Достижения» на главной.</p>
+    </div>
+</div>
+
+<div id="profile" class="tab-content">
+    <div class="card">
+        <label>Имя (в боте):</label>
+        <input type="text" id="editName" placeholder="Новое имя">
+        <button id="saveProfileBtn">💾 Сохранить</button>
+    </div>
+</div>
+
+<div id="admin" class="tab-content">
+    <div class="card">
+        <h3>📢 Рассылка</h3>
+        <input type="text" id="bcHeader" placeholder="Заголовок">
+        <textarea id="bcText" rows="3" placeholder="Текст"></textarea>
+        <button id="startBroadcastBtn">▶ Запустить (только текст)</button>
+    </div>
+    <div class="card">
+        <h3>🔍 Поиск</h3>
+        <input type="text" id="searchUserId" placeholder="ID или @username">
+        <button id="searchUserBtn">Найти</button>
+    </div>
+    <div class="card">
+        <h3>🚫 Бан / ✅ Разбан</h3>
+        <input type="text" id="banUserId" placeholder="ID">
+        <button id="banUserBtn" class="danger-btn">Забанить</button>
+        <button id="unbanUserBtn" class="secondary-btn">Разбанить</button>
+    </div>
+    <div class="card">
+        <h3>📊 Графики</h3>
+        <button id="statsBtn">Показать</button>
+    </div>
+</div>
+
+<footer>QOWL World — синхронизация через бота</footer>
+
+<script>
+    // Конфигурация
+    const BOT_TOKEN = "8638375796:AAGlo9QbXA_viI8VxDJ5QF2zWe6im9BgF0o";
+    const BOT_USERNAME = "qowl_bot";
+
+    // Получение данных пользователя Telegram (если открыто через WebApp)
+    let tg = window.Telegram?.WebApp;
+    let user = { id: null, first_name: "Гость", username: "" };
+    let isInTelegram = false;
+    if (tg) {
         tg.ready();
-        log("WebApp инициализирован. initDataUnsafe.user: " + JSON.stringify(tg.initDataUnsafe?.user));
+        tg.expand();
+        user = tg.initDataUnsafe?.user || user;
+        isInTelegram = true;
+    } else {
+        // Для тестирования вне Telegram
+        console.warn("Работаем вне Telegram WebView");
+        user.id = localStorage.getItem("test_user_id") || Math.floor(Math.random() * 1000000);
+        user.first_name = localStorage.getItem("test_name") || "Тестер";
+        user.username = localStorage.getItem("test_username") || "tester";
+    }
 
-        document.getElementById('btn').onclick = () => {
-            log("Нажата кнопка sendData");
-            try {
-                tg.sendData(JSON.stringify({ type: "test", time: Date.now() }));
-                log("sendData выполнен без ошибок");
-            } catch(e) {
-                log("Ошибка sendData: " + e.message);
-            }
-        };
+    const userId = user.id;
+    const firstName = user.first_name;
+    const username = user.username || "";
+    const photoUrl = user.photo_url || "";
 
-        document.getElementById('btn2').onclick = async () => {
-            const token = "8638375796:AAGlo9QbXA_viI8VxDJ5QF2zWe6im9BgF0o";
-            const chat_id = tg.initDataUnsafe?.user?.id;
-            if (!chat_id) {
-                log("Нет chat_id, невозможно отправить HTTP-запрос");
-                return;
+    // Определяем, админ ли пользователь (по списку ADMINS из бота, но тут проверим через параметр URL)
+    const urlParams = new URLSearchParams(window.location.search);
+    const isAdmin = urlParams.get('admin') === '1';
+
+    // DOM элементы
+    const userAvatar = document.getElementById("userAvatar");
+    const userFullName = document.getElementById("userFullName");
+    const userUsernameSpan = document.getElementById("userUsername");
+    const refLinkInput = document.getElementById("refLinkInput");
+    const editNameInput = document.getElementById("editName");
+
+    // Кнопки
+    const checkSubBtn = document.getElementById("checkSubBtn");
+    const topBtn = document.getElementById("topBtn");
+    const myAchievementsBtn = document.getElementById("myAchievementsBtn");
+    const showRefsBtn = document.getElementById("showRefsBtn");
+    const copyRefBtn = document.getElementById("copyRefBtn");
+    const shareRefBtn = document.getElementById("shareRefBtn");
+    const saveProfileBtn = document.getElementById("saveProfileBtn");
+    const startBroadcastBtn = document.getElementById("startBroadcastBtn");
+    const searchUserBtn = document.getElementById("searchUserBtn");
+    const banUserBtn = document.getElementById("banUserBtn");
+    const unbanUserBtn = document.getElementById("unbanUserBtn");
+    const statsBtn = document.getElementById("statsBtn");
+
+    // Отправка команды боту через HTTP (простой метод)
+    async function sendCommand(command, params = "") {
+        if (!userId) {
+            alert("Не удалось определить пользователя");
+            return;
+        }
+        let text = `/webapp_${command}`;
+        if (params) text += `|${params}`;
+        // Отправляем как обычное сообщение через API Telegram
+        const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
+        try {
+            const response = await fetch(url, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ chat_id: userId, text: text })
+            });
+            const data = await response.json();
+            if (!data.ok) {
+                console.error("Ошибка отправки:", data);
+                alert("Ошибка связи с ботом. Проверьте, что вы начали диалог с ботом (отправьте /start).");
+            } else {
+                console.log("Команда отправлена:", command);
             }
-            log("Отправка через HTTP API...");
-            try {
-                const resp = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ chat_id, text: "Тест из веб-приложения (HTTP)" })
-                });
-                const data = await resp.json();
-                log("Ответ API: " + JSON.stringify(data));
-            } catch(e) {
-                log("Ошибка HTTP: " + e.message);
-            }
-        };
-    </script>
+        } catch(e) {
+            console.error("HTTP ошибка:", e);
+            alert("Сетевая ошибка. Проверьте интернет.");
+        }
+    }
+
+    // Обработчики кнопок
+    showRefsBtn.onclick = () => sendCommand("get_refs");
+    checkSubBtn.onclick = () => sendCommand("check_subscription_web");
+    topBtn.onclick = () => sendCommand("get_top");
+    myAchievementsBtn.onclick = () => sendCommand("get_achievements");
+    saveProfileBtn.onclick = () => {
+        const newName = editNameInput.value.trim();
+        if (newName) sendCommand("update_name", newName);
+        else alert("Введите имя");
+    };
+    copyRefBtn.onclick = () => {
+        refLinkInput.select();
+        document.execCommand("copy");
+        alert("Ссылка скопирована!");
+    };
+    shareRefBtn.onclick = () => {
+        const link = refLinkInput.value;
+        window.open(`https://t.me/share/url?url=${encodeURIComponent(link)}&text=Присоединяйся к QOWL!`);
+    };
+
+    if (isAdmin) {
+        document.getElementById("adminTab").style.display = "flex";
+        if (startBroadcastBtn) {
+            startBroadcastBtn.onclick = () => {
+                const header = document.getElementById("bcHeader").value;
+                const text = document.getElementById("bcText").value;
+                if (header && text) sendCommand("start_broadcast", `${header}|${text}`);
+                else alert("Заполните заголовок и текст");
+            };
+        }
+        if (searchUserBtn) {
+            searchUserBtn.onclick = () => {
+                const query = document.getElementById("searchUserId").value.trim();
+                if (query) sendCommand("search_user", query);
+                else alert("Введите ID или @username");
+            };
+        }
+        if (banUserBtn) {
+            banUserBtn.onclick = () => {
+                const uid = document.getElementById("banUserId").value.trim();
+                if (uid && /^\d+$/.test(uid)) sendCommand("ban_user", uid);
+                else alert("Введите числовой ID");
+            };
+        }
+        if (unbanUserBtn) {
+            unbanUserBtn.onclick = () => {
+                const uid = document.getElementById("banUserId").value.trim();
+                if (uid && /^\d+$/.test(uid)) sendCommand("unban_user", uid);
+                else alert("Введите ID");
+            };
+        }
+        if (statsBtn) statsBtn.onclick = () => sendCommand("get_stats");
+    }
+
+    // Профиль
+    if (photoUrl) userAvatar.src = photoUrl;
+    else {
+        const canvas = document.createElement('canvas');
+        canvas.width = 64; canvas.height = 64;
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle = "#d4af37";
+        ctx.fillRect(0, 0, 64, 64);
+        ctx.fillStyle = "#000";
+        ctx.font = "bold 28px sans-serif";
+        ctx.fillText((firstName[0] || "Q").toUpperCase(), 20, 44);
+        userAvatar.src = canvas.toDataURL();
+    }
+    const fullName = firstName;
+    userFullName.innerHTML = `${fullName} ${user.is_premium ? '<span class="badge">⭐ PREMIUM</span>' : ''}`;
+    userUsernameSpan.innerText = username ? `@${username}` : "";
+
+    const refLink = `https://t.me/${BOT_USERNAME}?start=${userId}`;
+    refLinkInput.value = refLink;
+
+    // Время и погода
+    function updateTime() {
+        document.getElementById("timeDisplay").innerHTML = `⏰ ${new Date().toLocaleTimeString()}`;
+    }
+    updateTime();
+    setInterval(updateTime, 1000);
+    async function fetchWeather() {
+        try {
+            const res = await fetch('https://ipapi.co/json/');
+            const ipData = await res.json();
+            const city = ipData.city || "Москва";
+            const weatherRes = await fetch(`https://wttr.in/${city}?format=j1&lang=ru`);
+            const weather = await weatherRes.json();
+            const temp = weather.current_condition[0].temp_C;
+            const desc = weather.current_condition[0].lang_ru[0].value;
+            document.getElementById("weatherDisplay").innerHTML = `🌍 ${city} | 🌡️ ${temp}°C ${desc}`;
+        } catch(e) {
+            document.getElementById("weatherDisplay").innerHTML = "🌤️ Погода недоступна";
+        }
+    }
+    fetchWeather();
+    setInterval(fetchWeather, 600000);
+
+    // Переключение вкладок
+    const tabs = document.querySelectorAll(".tab");
+    const contents = document.querySelectorAll(".tab-content");
+    function switchTab(tabId) {
+        contents.forEach(c => c.classList.remove("active"));
+        document.getElementById(tabId).classList.add("active");
+        tabs.forEach(t => t.classList.remove("active"));
+        document.querySelector(`.tab[data-tab="${tabId}"]`).classList.add("active");
+    }
+    tabs.forEach(tab => {
+        if (tab.style.display !== "none") {
+            tab.addEventListener("click", () => switchTab(tab.getAttribute("data-tab")));
+        }
+    });
+
+    // Автоматическая проверка подписки при загрузке
+    setTimeout(() => sendCommand("check_subscription_auto"), 1000);
+</script>
 </body>
 </html>
