@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
     <title>QOWL Premium WebApp</title>
-    <!-- Telegram WebApp SDK -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         * {
@@ -25,7 +24,6 @@
             color: #ffffff;
         }
 
-        /* Основная карточка с эффектом стекла и синим акцентом */
         .premium-card {
             max-width: 420px;
             width: 100%;
@@ -35,29 +33,9 @@
             border: 1px solid rgba(0, 100, 255, 0.35);
             box-shadow: 0 25px 45px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(0, 160, 255, 0.15) inset;
             padding: 32px 24px 40px;
-            transition: all 0.3s ease;
             text-align: center;
         }
 
-        /* Декоративный блеск */
-        .glow {
-            position: relative;
-            overflow: hidden;
-        }
-
-        .glow::before {
-            content: "";
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(0, 120, 255, 0.2) 0%, rgba(0, 0, 0, 0) 70%);
-            opacity: 0.5;
-            pointer-events: none;
-        }
-
-        /* Аватар */
         .avatar-wrapper {
             margin: 0 auto 20px;
             width: 110px;
@@ -72,8 +50,7 @@
             object-fit: cover;
             background: linear-gradient(135deg, #1e3a6f, #0a1a2f);
             border: 3px solid #0077ff;
-            box-shadow: 0 10px 20px rgba(0, 119, 255, 0.4), 0 0 0 2px rgba(255, 215, 0, 0.3);
-            transition: transform 0.2s;
+            box-shadow: 0 10px 20px rgba(0, 119, 255, 0.4);
         }
 
         .avatar-placeholder {
@@ -88,7 +65,6 @@
             font-weight: 600;
             color: #d4af37;
             border: 2px solid #2f6eb3;
-            box-shadow: 0 0 12px rgba(0, 100, 255, 0.6);
         }
 
         .premium-badge {
@@ -107,11 +83,6 @@
             border: 1px solid rgba(255,255,200,0.6);
         }
 
-        /* Информация */
-        .user-info {
-            margin: 8px 0 12px;
-        }
-
         .display-name {
             font-size: 28px;
             font-weight: 700;
@@ -119,25 +90,18 @@
             background-clip: text;
             -webkit-background-clip: text;
             color: transparent;
-            letter-spacing: -0.3px;
-            text-shadow: 0 1px 2px rgba(0,0,0,0.2);
         }
 
         .username {
             font-size: 17px;
             color: #90a9c7;
             margin-top: 6px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
             background: rgba(0, 50, 100, 0.4);
             width: fit-content;
             margin-left: auto;
             margin-right: auto;
             padding: 6px 15px;
             border-radius: 40px;
-            backdrop-filter: blur(4px);
         }
 
         .user-id {
@@ -147,13 +111,11 @@
             border-radius: 40px;
             display: inline-block;
             font-family: monospace;
-            letter-spacing: 0.5px;
             border: 1px solid #1f4977;
             color: #bfd9ff;
             margin-top: 12px;
         }
 
-        /* Кнопка теста */
         .test-button {
             margin-top: 36px;
             width: 100%;
@@ -176,16 +138,8 @@
 
         .test-button:active {
             transform: scale(0.97);
-            background: linear-gradient(95deg, #002244, #002855);
-            box-shadow: 0 2px 8px rgba(0,0,0,0.4);
         }
 
-        .test-icon {
-            font-size: 22px;
-            filter: drop-shadow(0 0 2px gold);
-        }
-
-        /* статус / уведомление */
         .status-message {
             margin-top: 20px;
             font-size: 13px;
@@ -193,337 +147,100 @@
             background: rgba(0,20,40,0.6);
             border-radius: 30px;
             padding: 10px 12px;
-            transition: 0.2s;
-            text-align: center;
-            backdrop-filter: blur(5px);
         }
 
-        /* разделитель */
         .divider {
             width: 80px;
             height: 3px;
             background: linear-gradient(90deg, transparent, #2f6eb3, #d4af37, #2f6eb3, transparent);
             margin: 18px auto 8px;
-            border-radius: 5px;
-        }
-
-        /* адаптация */
-        @media (max-width: 480px) {
-            .premium-card {
-                padding: 24px 20px 32px;
-            }
-            .display-name {
-                font-size: 24px;
-            }
-        }
-
-        /* кастомный скролл */
-        ::-webkit-scrollbar {
-            width: 0;
-            background: transparent;
         }
     </style>
 </head>
 <body>
-    <div class="premium-card glow">
-        <div class="avatar-wrapper" id="avatarContainer">
-            <!-- Динамически вставим аватар или плейсхолдер -->
-        </div>
-
-        <div class="user-info">
-            <div class="display-name" id="displayName">Загрузка...</div>
-            <div class="username" id="usernameSection">
-                <span>🔗</span> <span id="usernameText">@</span>
-            </div>
-            <div class="user-id" id="userIdText">🆔 ID: --</div>
-        </div>
+    <div class="premium-card">
+        <div class="avatar-wrapper" id="avatarContainer"></div>
+        <div class="display-name" id="displayName">Загрузка...</div>
+        <div class="username" id="usernameSection">🔗 <span id="usernameText">@</span></div>
+        <div class="user-id" id="userIdText">🆔 ID: --</div>
         <div class="divider"></div>
-
         <button class="test-button" id="testBtn">
-            <span class="test-icon">⚡</span>
-            <span>Отправить тест боту</span>
-            <span class="test-icon">🎮</span>
+            <span>⚡ Отправить тест боту</span>
         </button>
-        <div class="status-message" id="statusMsg">
-            ✨ Готов к действию
-        </div>
+        <div class="status-message" id="statusMsg">✨ Готов к действию</div>
     </div>
 
     <script>
-        // Инициализация Telegram WebApp
         const tg = window.Telegram.WebApp;
-        
-        // Расширяем на всё окно и задаём стили
         tg.expand();
-        tg.enableClosingConfirmation(); // предупреждение при закрытии (премиум-фича)
+        tg.enableClosingConfirmation();
         tg.setBackgroundColor("#03060c");
-        tg.setHeaderColor("bg_color");
-        
-        // Используем primary цвет для кнопок в шапке (но у нас своя кнопка)
-        // Получаем данные пользователя из Telegram (безопасный контекст)
-        let userData = null;
-        let userAvatarUrl = null;
-        
-        // Пытаемся взять данные из initDataUnsafe
-        if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
-            userData = tg.initDataUnsafe.user;
-        } else {
-            // Fallback для тестов вне Telegram (например, веб预览) — добавим заглушку, но в реальном боте всегда приходят данные.
-            console.warn("WebApp запущен вне Telegram или данные не получены, используем тестовые данные.");
-            userData = {
-                id: 6411263772,
-                first_name: "QOWL",
-                last_name: "Premium",
-                username: "qowl_premium",
-                language_code: "ru",
-                is_premium: true,
-                photo_url: null
-            };
-        }
-        
-        // Дополнительно, если есть photo_url в user (бывает редко, но Telegram может дать)
-        if (userData && userData.photo_url) {
-            userAvatarUrl = userData.photo_url;
-        }
-        
-        // Функция для генерации инициалов (на случай если аватарки нет)
+
+        let userData = tg.initDataUnsafe?.user || {
+            id: 6411263772,
+            first_name: "QOWL",
+            last_name: "Premium",
+            username: "qowl_premium",
+            is_premium: true
+        };
+
         function getInitials(first, last, username) {
             let initials = "";
-            if (first && first.length > 0) initials += first[0].toUpperCase();
-            if (last && last.length > 0) initials += last[0].toUpperCase();
-            if (initials.length === 0 && username && username.length > 0) initials = username[0].toUpperCase();
-            if (initials.length === 0) initials = "U";
+            if (first?.length) initials += first[0].toUpperCase();
+            if (last?.length) initials += last[0].toUpperCase();
+            if (!initials && username?.length) initials = username[0].toUpperCase();
+            if (!initials) initials = "U";
             return initials;
         }
-        
-        // Создаём / обновляем аватар
+
         function renderAvatar() {
             const container = document.getElementById("avatarContainer");
-            if (!container) return;
-            
-            // Если есть прямая ссылка на аватар (редко, но возможно)
-            if (userAvatarUrl && userAvatarUrl.trim() !== "") {
-                container.innerHTML = `<img class="avatar" src="${userAvatarUrl}" alt="avatar" onerror="this.onerror=null; this.style.display='none'; document.getElementById('avatarPlaceholderFallback').style.display='flex';">`;
-                // добавим дополнительный placeholder на случай ошибки загрузки
-                const img = container.querySelector('img');
-                if (img) {
-                    img.onerror = () => {
-                        img.style.display = 'none';
-                        const fallbackDiv = document.createElement('div');
-                        fallbackDiv.className = 'avatar-placeholder';
-                        fallbackDiv.id = 'avatarPlaceholderFallback';
-                        const initials = getInitials(userData.first_name, userData.last_name, userData.username);
-                        fallbackDiv.innerText = initials;
-                        container.appendChild(fallbackDiv);
-                        // также добавим бейдж премиум если надо
-                        addPremiumBadge(container);
-                    };
-                }
-                // премиум бэйдж (если пользователь премиум)
-                addPremiumBadge(container);
-                return;
-            }
-            
-            // Если нет фото — создаём красивый плейсхолдер с инициалами
             const initials = getInitials(userData.first_name, userData.last_name, userData.username);
             container.innerHTML = `
-                <div class="avatar-placeholder" id="dynamicPlaceholder">
-                    ${initials}
-                </div>
+                <div class="avatar-placeholder">${initials}</div>
             `;
-            addPremiumBadge(container);
+            const badge = document.createElement('div');
+            badge.className = 'premium-badge';
+            badge.innerHTML = '⭐';
+            container.appendChild(badge);
         }
-        
-        // Добавление значка премиум (если аккаунт имеет Telegram Premium или просто для стиля)
-        function addPremiumBadge(container) {
-            // Удаляем старый бейдж, если есть
-            const oldBadge = container.querySelector('.premium-badge');
-            if (oldBadge) oldBadge.remove();
-            
-            // Решаем показывать ли бейдж: если is_premium === true или, для демонстрации, всегда добавляем "премиум шик"
-            let isPremiumUser = (userData && userData.is_premium === true);
-            // Даже если не премиум, в нашем веб-приложении тематика премиум — покажем золотую иконку
-            // для единообразия с дизайном — значок «премиум»
-            const badgeSpan = document.createElement('div');
-            badgeSpan.className = 'premium-badge';
-            badgeSpan.innerHTML = '⭐'; // или символ короны 👑
-            badgeSpan.setAttribute('aria-label', 'Premium');
-            container.appendChild(badgeSpan);
-        }
-        
-        // Заполняем информацию о пользователе
+
         function updateUserInfo() {
-            if (!userData) {
-                document.getElementById("displayName").innerText = "Гость";
-                document.getElementById("usernameText").innerText = "@unknown";
-                document.getElementById("userIdText").innerHTML = "🆔 ID: --";
-                return;
-            }
-            
-            // Полное имя (first_name + last_name)
-            let fullName = userData.first_name || "";
-            if (userData.last_name) fullName += " " + userData.last_name;
-            if (fullName.trim() === "") fullName = userData.username || "Пользователь";
-            
-            const displayNameElem = document.getElementById("displayName");
-            displayNameElem.innerText = fullName;
-            
-            // Username
-            const usernameRaw = userData.username;
-            const usernameSpan = document.getElementById("usernameText");
-            if (usernameRaw && usernameRaw !== "") {
-                usernameSpan.innerText = "@" + usernameRaw;
-            } else {
-                usernameSpan.innerText = "нет username";
-            }
-            
-            // ID пользователя
-            const userIdElem = document.getElementById("userIdText");
-            userIdElem.innerHTML = `🆔 ID: <span style="font-family: monospace;">${userData.id}</span>`;
-            
-            // небольшой эффект: если премиум — добавим дополнительный блеск
-            if (userData.is_premium) {
-                const nameParent = document.querySelector('.display-name');
-                if (nameParent) nameParent.style.textShadow = "0 0 8px rgba(212, 175, 55, 0.5)";
-            }
+            if (!userData) return;
+            const fullName = [userData.first_name, userData.last_name].filter(Boolean).join(' ') || userData.username || "Пользователь";
+            document.getElementById("displayName").innerText = fullName;
+            document.getElementById("usernameText").innerText = userData.username ? "@"+userData.username : "нет username";
+            document.getElementById("userIdText").innerHTML = `🆔 ID: <span style="font-family: monospace;">${userData.id}</span>`;
         }
-        
-        // ========== ОТПРАВКА ТЕСТОВОГО СООБЩЕНИЯ БОТУ ==========
-        // Принцип: через Telegram.WebApp.sendData отправляем JSON с типом события "test"
-        // Бот должен обрабатывать message с типом web_app_data. В текущем коде бота этого обработчика нет,
-        // но мы его добавляем прямо сейчас (описание в комментариях). Но в веб-приложении достаточно отправить данные.
-        // Бот получит сообщение от пользователя с data, и сможет ответить.
+
         async function sendTestToBot() {
-            const statusDiv = document.getElementById("statusMsg");
             if (!userData) {
-                statusDiv.innerHTML = "❌ Ошибка: данные пользователя не загружены";
-                statusDiv.style.color = "#ffaa88";
-                setTimeout(() => {
-                    statusDiv.style.color = "#7d9ac0";
-                    statusDiv.innerHTML = "✨ Готов к действию";
-                }, 2000);
+                tg.showPopup({ title: "Ошибка", message: "Нет данных пользователя", buttons: [{type: "close"}] });
                 return;
             }
-            
-            // Формируем данные для отправки: action test, id и время
-            const testPayload = {
+            const payload = {
                 action: "test",
                 user_id: userData.id,
                 username: userData.username || "",
-                timestamp: Date.now(),
-                webapp: "qowl_premium"
+                timestamp: Date.now()
             };
-            
-            const jsonString = JSON.stringify(testPayload);
-            
             try {
-                // Отправляем через WebApp метод
-                tg.sendData(jsonString);
-                statusDiv.innerHTML = "✅ Тестовое сообщение отправлено боту! (ожидайте ответ)";
-                statusDiv.style.color = "#b8ffc8";
-                // дополнительно показываем попап? используем Telegram alert для премиум ощущения
+                tg.sendData(JSON.stringify(payload));
                 tg.showPopup({
                     title: "📡 QOWL WebApp",
                     message: "Тест отправлен! Бот получил ваш сигнал.",
-                    buttons: [{type: "ok", text: "✨ Отлично", id: "ok"}]
-                }, (btnId) => {});
-                
-                // через 2 секунды вернуть стандартный статус
-                setTimeout(() => {
-                    if (document.getElementById("statusMsg")) {
-                        statusDiv.style.color = "#7d9ac0";
-                        statusDiv.innerHTML = "🎮 Готово. Ждите ответ бота!";
-                    }
-                }, 2500);
+                    buttons: [{ type: "ok", text: "✨ Отлично" }]
+                }, () => tg.close());
             } catch (err) {
-                console.error("sendData error:", err);
-                statusDiv.innerHTML = "⚠️ Ошибка отправки. Убедитесь, что открыто внутри Telegram.";
-                statusDiv.style.color = "#ffaa88";
-                tg.showPopup({
-                    title: "Ошибка",
-                    message: "Не удалось отправить данные. Попробуйте позже.",
-                    buttons: [{type: "close"}]
-                });
+                console.error(err);
+                tg.showPopup({ title: "Ошибка", message: "Не удалось отправить данные.", buttons: [{type: "close"}] });
             }
         }
-        
-        // Альтернативная отправка: можно также использовать прямой вызов через Bot API если бот имеет публичный токен?
-        // НО ТОКЕН НЕЛЬЗЯ ХРАНИТЬ НА КЛИЕНТЕ! Поэтому используем только sendData. Бот обработает и отправит ответное сообщение.
-        // В дополнение, можно через tg.openTelegramLink? но это не требуется.
-        
-        // Навешиваем обработчик на кнопку
-        function bindEvents() {
-            const testBtn = document.getElementById("testBtn");
-            if (testBtn) {
-                testBtn.addEventListener("click", (e) => {
-                    e.preventDefault();
-                    sendTestToBot();
-                });
-            }
-        }
-        
-        // ----- Запуск инициализации -----
-        function init() {
-            // дополнительные манипуляции, чтобы страница корректно вписалась в WebView
-            document.body.style.backgroundColor = "#03060c";
-            // Если тема темная (всегда dark в нашем случае)
-            tg.setBackgroundColor("#03060c");
-            // рендер аватара и данных
-            renderAvatar();
-            updateUserInfo();
-            bindEvents();
-            
-            // Сообщаем, что WebApp готов и отображает контент
-            tg.ready();
-            
-            // Дополнительно: слушаем изменения темы на случай если телеграм переключит (но мы фикс темная)
-            tg.onEvent('themeChanged', () => {
-                // оставляем свою цветовую схему
-                document.body.style.backgroundColor = "#03060c";
-            });
-            
-            // лог успешной загрузки
-            console.log("QOWL Premium WebApp loaded, user:", userData?.id);
-        }
-        
-        // Запускаем после загрузки DOM
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', init);
-        } else {
-            init();
-        }
-        
-        // Доп. эстетика: обрабатываем возможные ошибки с картинкой аватара (подстраховка)
-        window.addEventListener('error', function(e) {
-            if (e.target.tagName === 'IMG' && e.target.classList.contains('avatar')) {
-                console.log("Avatar failed to load, using placeholder");
-                const container = document.getElementById('avatarContainer');
-                if (container && !container.querySelector('.avatar-placeholder')) {
-                    const initials = getInitials(userData?.first_name, userData?.last_name, userData?.username);
-                    const placeholderDiv = document.createElement('div');
-                    placeholderDiv.className = 'avatar-placeholder';
-                    placeholderDiv.innerText = initials;
-                    container.innerHTML = '';
-                    container.appendChild(placeholderDiv);
-                    addPremiumBadge(container);
-                }
-            }
-        });
-        
-        // Добавляем функцию для динамического отображения статуса при получении фокуса (игровой момент)
-        window.addEventListener("focus", () => {
-            const msgDiv = document.getElementById("statusMsg");
-            if (msgDiv && msgDiv.innerText.includes("Готово")) {
-                setTimeout(() => {
-                    if (msgDiv) msgDiv.innerHTML = "🌟 Премиум режим активен";
-                    setTimeout(() => {
-                        if (msgDiv && !msgDiv.innerText.includes("Тестовое")) 
-                            msgDiv.innerHTML = "✨ Готов к действию";
-                    }, 1800);
-                }, 600);
-            }
-        });
-        
+
+        renderAvatar();
+        updateUserInfo();
+        document.getElementById("testBtn").addEventListener("click", sendTestToBot);
+        tg.ready();
     </script>
 </body>
 </html>
