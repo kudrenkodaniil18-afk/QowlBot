@@ -1,0 +1,146 @@
+2026-04-24 03:45:30,446 - INFO - Бот запущен
+2026-04-24 03:45:30,447 - INFO - Start polling
+2026-04-24 03:45:30,947 - INFO - Run polling for bot @qowl_bot id=8638375796 - 'QowlBot'
+2026-04-24 03:45:34,138 - INFO - Update id=854679574 is not handled. Duration 14 ms by bot id=8638375796
+2026-04-24 03:45:34,141 - ERROR - Cause exception while process update id=854679574 by bot id=8638375796
+OperationalError: no such column: shlak
+Traceback (most recent call last):
+  File "C:\Users\kudre\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\aiogram\dispatcher\dispatcher.py", line 320, in _process_update
+    response = await self.feed_update(bot, update, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\kudre\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\aiogram\dispatcher\dispatcher.py", line 164, in feed_update
+    response = await self.update.wrap_outer_middleware(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<7 lines>...
+    )
+    ^
+  File "C:\Users\kudre\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\aiogram\dispatcher\middlewares\error.py", line 27, in __call__
+    return await handler(event, data)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\kudre\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\aiogram\dispatcher\middlewares\user_context.py", line 58, in __call__
+    return await handler(event, data)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\kudre\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\aiogram\fsm\middleware.py", line 43, in __call__
+    return await handler(event, data)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\kudre\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\aiogram\dispatcher\event\telegram.py", line 126, in trigger
+    return await wrapped_inner(event, kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\kudre\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\aiogram\dispatcher\event\handler.py", line 71, in call
+    return await wrapped()
+           ^^^^^^^^^^^^^^^
+  File "C:\Users\kudre\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\aiogram\dispatcher\dispatcher.py", line 283, in _listen_update
+    return await self.propagate_event(update_type=update_type, event=event, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\kudre\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\aiogram\dispatcher\router.py", line 161, in propagate_event
+    return await observer.wrap_outer_middleware(_wrapped, event=event, data=kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\kudre\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\aiogram\dispatcher\router.py", line 153, in _wrapped
+    return await self._propagate_event(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<4 lines>...
+    )
+    ^
+  File "C:\Users\kudre\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\aiogram\dispatcher\router.py", line 181, in _propagate_event
+    response = await observer.trigger(event, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\kudre\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\aiogram\dispatcher\event\telegram.py", line 126, in trigger
+    return await wrapped_inner(event, kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\kudre\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\aiogram\dispatcher\event\handler.py", line 71, in call
+    return await wrapped()
+           ^^^^^^^^^^^^^^^
+  File "c:\Users\kudre\Desktop\QowlBot\qowlbot.py", line 447, in start
+    user = await get_user(message.from_user.id)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\kudre\Desktop\QowlBot\qowlbot.py", line 178, in get_user
+    cur = await db.execute(
+          ^^^^^^^^^^^^^^^^^
+    ...<2 lines>...
+    )
+    ^
+  File "C:\Users\kudre\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\aiosqlite\core.py", line 223, in execute
+    cursor = await self._execute(self._conn.execute, sql, parameters)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\kudre\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\aiosqlite\core.py", line 160, in _execute
+    return await future
+           ^^^^^^^^^^^^
+  File "C:\Users\kudre\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\aiosqlite\core.py", line 63, in _connection_worker_thread
+    result = function()
+sqlite3.OperationalError: no such column: shlak
+2026-04-24 03:45:47,924 - INFO - Polling stopped
+2026-04-24 03:45:47,931 - ERROR - Failed to fetch updates - TelegramNetworkError: HTTP Client says - ServerDisconnectedError: Server disconnected
+2026-04-24 03:45:47,935 - WARNING - Sleep for 1.000000 seconds and try again... (tryings = 0, bot id = 8638375796)
+2026-04-24 03:45:48,193 - INFO - Polling stopped for bot @qowl_bot id=8638375796 - 'QowlBot'
+2026-04-24 03:45:52,511 - INFO - Бот запущен
+2026-04-24 03:45:52,511 - INFO - Start polling
+2026-04-24 03:45:52,931 - INFO - Run polling for bot @qowl_bot id=8638375796 - 'QowlBot'
+2026-04-24 03:45:55,765 - INFO - Update id=854679575 is handled. Duration 642 ms by bot id=8638375796
+2026-04-24 03:46:11,776 - INFO - Update id=854679576 is not handled. Duration 23 ms by bot id=8638375796
+2026-04-24 03:46:11,777 - ERROR - Cause exception while process update id=854679576 by bot id=8638375796
+TypeError: 'NoneType' object is not subscriptable
+Traceback (most recent call last):
+  File "C:\Users\kudre\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\aiogram\dispatcher\dispatcher.py", line 320, in _process_update
+    response = await self.feed_update(bot, update, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\kudre\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\aiogram\dispatcher\dispatcher.py", line 164, in feed_update
+    response = await self.update.wrap_outer_middleware(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<7 lines>...
+    )
+    ^
+  File "C:\Users\kudre\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\aiogram\dispatcher\middlewares\error.py", line 27, in __call__
+    return await handler(event, data)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\kudre\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\aiogram\dispatcher\middlewares\user_context.py", line 58, in __call__
+    return await handler(event, data)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\kudre\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\aiogram\fsm\middleware.py", line 43, in __call__
+    return await handler(event, data)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\kudre\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\aiogram\dispatcher\event\telegram.py", line 126, in trigger
+    return await wrapped_inner(event, kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\kudre\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\aiogram\dispatcher\event\handler.py", line 71, in call
+    return await wrapped()
+           ^^^^^^^^^^^^^^^
+  File "C:\Users\kudre\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\aiogram\dispatcher\dispatcher.py", line 283, in _listen_update
+    return await self.propagate_event(update_type=update_type, event=event, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\kudre\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\aiogram\dispatcher\router.py", line 161, in propagate_event
+    return await observer.wrap_outer_middleware(_wrapped, event=event, data=kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\kudre\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\aiogram\dispatcher\router.py", line 153, in _wrapped
+    return await self._propagate_event(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<4 lines>...
+    )
+    ^
+  File "C:\Users\kudre\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\aiogram\dispatcher\router.py", line 181, in _propagate_event
+    response = await observer.trigger(event, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\kudre\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\aiogram\dispatcher\event\telegram.py", line 126, in trigger
+    return await wrapped_inner(event, kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\kudre\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\aiogram\dispatcher\event\handler.py", line 71, in call
+    return await wrapped()
+           ^^^^^^^^^^^^^^^
+  File "c:\Users\kudre\Desktop\QowlBot\qowlbot.py", line 693, in shop_callback
+    await shop_command(call.message)
+  File "c:\Users\kudre\Desktop\QowlBot\qowlbot.py", line 477, in shop_command
+    shlak = user[4]
+            ~~~~^^^
+TypeError: 'NoneType' object is not subscriptable
+2026-04-24 03:46:14,524 - INFO - Update id=854679577 is handled. Duration 143 ms by bot id=8638375796
+2026-04-24 03:46:16,532 - INFO - Update id=854679578 is handled. Duration 134 ms by bot id=8638375796
+2026-04-24 03:46:21,460 - INFO - Update id=854679579 is handled. Duration 298 ms by bot id=8638375796
+2026-04-24 03:46:24,608 - INFO - Update id=854679580 is handled. Duration 144 ms by bot id=8638375796
+2026-04-24 03:46:31,095 - INFO - Update id=854679581 is handled. Duration 303 ms by bot id=8638375796
+2026-04-24 03:46:33,457 - INFO - Update id=854679582 is handled. Duration 141 ms by bot id=8638375796
+2026-04-24 03:46:35,247 - INFO - Update id=854679583 is handled. Duration 117 ms by bot id=8638375796
+2026-04-24 03:46:40,587 - INFO - Update id=854679584 is handled. Duration 163 ms by bot id=8638375796
+2026-04-24 03:46:45,090 - INFO - Update id=854679585 is handled. Duration 188 ms by bot id=8638375796
+2026-04-24 03:46:57,838 - INFO - Polling stopped
+2026-04-24 03:46:57,839 - ERROR - Failed to fetch updates - TelegramNetworkError: HTTP Client says - ServerDisconnectedError: Server disconnected
+2026-04-24 03:46:57,839 - WARNING - Sleep for 1.000000 seconds and try again... (tryings = 0, bot id = 8638375796)
+2026-04-24 03:46:58,105 - INFO - Polling stopped for bot @qowl_bot id=8638375796 - 'QowlBot'
