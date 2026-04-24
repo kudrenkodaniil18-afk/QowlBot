@@ -6,102 +6,77 @@
     <title>Проверка подписки</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
         body {
             background: var(--tg-theme-bg-color, #ffffff);
             color: var(--tg-theme-text-color, #000000);
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
+            font-family: sans-serif;
             padding: 20px;
-        }
-        .container {
-            max-width: 400px;
-            width: 100%;
             text-align: center;
         }
         button {
             background: var(--tg-theme-button-color, #2c7be5);
-            color: var(--tg-theme-button-text-color, #ffffff);
+            color: var(--tg-theme-button-text-color, white);
             border: none;
             border-radius: 12px;
             padding: 14px 24px;
             font-size: 1.2rem;
-            font-weight: 600;
             width: 100%;
             cursor: pointer;
-            transition: opacity 0.2s;
-            margin-top: 20px;
         }
-        button:active {
-            opacity: 0.7;
-        }
-        .info {
+        .debug {
             margin-top: 30px;
             padding: 16px;
-            background: var(--tg-theme-secondary-bg-color, #f0f0f0);
-            border-radius: 16px;
-            font-size: 0.9rem;
-        }
-        .status {
-            font-weight: bold;
-            margin-top: 10px;
-        }
-        h1 {
-            font-size: 1.8rem;
-            margin-bottom: 10px;
-        }
-        .subscribed {
-            color: #00c853;
-        }
-        .not-subscribed {
-            color: #d32f2f;
+            background: var(--tg-theme-secondary-bg-color, #eee);
+            border-radius: 12px;
+            font-size: 0.8rem;
+            text-align: left;
+            white-space: pre-wrap;
+            word-break: break-word;
         }
     </style>
 </head>
 <body>
-<div class="container">
     <h1>📢 Проверка подписки</h1>
-    <p>Нажмите кнопку, чтобы бот проверил вашу подписку на канал</p>
     <button id="checkBtn">🔍 Проверить подписку</button>
-    <div class="info">
-        ℹ️ Результат придёт в чат с ботом.
-        <div class="status" id="statusMsg"></div>
-    </div>
-</div>
+    <div class="debug" id="debug"></div>
 
-<script>
-    const tg = window.Telegram.WebApp;
-    tg.expand(); // разворачиваем на весь экран
-    tg.ready();
+    <script>
+        const debugDiv = document.getElementById('debug');
+        function log(msg) {
+            debugDiv.innerHTML += msg + '\n';
+            console.log(msg);
+        }
 
-    const checkBtn = document.getElementById('checkBtn');
-    const statusDiv = document.getElementById('statusMsg');
+        // Проверяем, что мы внутри Telegram
+        if (window.Telegram && window.Telegram.WebApp) {
+            const tg = window.Telegram.WebApp;
+            tg.expand();
+            tg.ready();
+            log('✅ Telegram WebApp инициализирован');
+            log(`User ID: ${tg.initDataUnsafe?.user?.id || 'неизвестно'}`);
+        } else {
+            log('❌ ОШИБКА: Telegram WebApp не найден! Откройте страницу через бота, а не в браузере.');
+        }
 
-    checkBtn.addEventListener('click', () => {
-        // Отправляем команду в бот
-        tg.sendData(JSON.stringify({ type: "check_subscription" }));
-        statusDiv.innerHTML = "⏳ Запрос отправлен... Ждите ответ в чате.";
-        statusDiv.style.color = "var(--tg-theme-hint-color, #888)";
-        // Можно также показать всплывающее уведомление
-        tg.showPopup({
-            title: "Отправлено",
-            message: "Бот проверит подписку и ответит в этом чате.",
-            buttons: [{type: "ok"}]
+        const checkBtn = document.getElementById('checkBtn');
+        checkBtn.addEventListener('click', () => {
+            log('🔘 Нажата кнопка');
+            if (window.Telegram && window.Telegram.WebApp) {
+                const tg = window.Telegram.WebApp;
+                const payload = JSON.stringify({ type: "check_subscription" });
+                log(`📤 Отправляем: ${payload}`);
+                tg.sendData(payload);
+                log('📨 Данные отправлены в бота');
+                tg.showPopup({
+                    title: "Отправлено",
+                    message: "Бот проверит подписку и ответит в чат.",
+                    buttons: [{type: "ok"}]
+                });
+            } else {
+                log('❌ Невозможно отправить – WebApp не активен');
+                alert('Откройте приложение через Telegram!');
+            }
         });
-    });
-
-    // Необязательно: можно показать приветствие
-    if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
-        const user = tg.initDataUnsafe.user;
-        console.log(`Пользователь: ${user.first_name} (${user.id})`);
-    }
-</script>
+    </script>
 </body>
 </html>
