@@ -288,6 +288,10 @@
             color: #000;
         }
 
+        .notification.loading {
+            background: #3b82f6;
+        }
+
         @keyframes slideDown {
             from {
                 transform: translateX(-50%) translateY(-50px);
@@ -320,6 +324,47 @@
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
+
+        .loader {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(212, 175, 55, 0.3);
+            border-radius: 50%;
+            border-top-color: #d4af37;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .achievements-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .achievement-badge {
+            background: rgba(212, 175, 55, 0.15);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            padding: 10px;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 12px;
+            color: #d4af37;
+        }
+
+        .achievement-badge.locked {
+            opacity: 0.5;
+            color: #666;
+        }
+
+        .badge-icon {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
     </style>
 </head>
 <body>
@@ -346,41 +391,52 @@
                         <span class="card-label">ID:</span>
                         <span class="card-value" id="profileUserId">Загрузка...</span>
                     </div>
+                    <div class="card-row">
+                        <span class="card-label">Рефералы:</span>
+                        <span class="card-value" id="profileRefs">-</span>
+                    </div>
+                    <div class="card-row">
+                        <span class="card-label">Имя:</span>
+                        <span class="card-value" id="profileName">-</span>
+                    </div>
                 </div>
                 <div class="ref-link-box">
                     <p>🔗 Ваша реферальная ссылка:</p>
-                    <div class="ref-link" id="refLink" onclick="copyRefLink()">Запросить в чате</div>
+                    <div class="ref-link" id="refLink" onclick="copyRefLink()">Запросить в боте</div>
                 </div>
                 <div class="card">
                     <h3>📝 Изменить имя</h3>
                     <input type="text" id="newName" placeholder="Введите новое имя">
                     <button class="button" onclick="updateName()">✓ Сохранить</button>
                 </div>
-                <button class="button secondary" onclick="sendCommand('get_profile')">📋 Показать профиль в чате</button>
-                <button class="button secondary" onclick="sendCommand('check_subscription')">✅ Проверить подписку</button>
+                <button class="button secondary" onclick="getProfile()">📋 Обновить профиль</button>
+                <button class="button secondary" onclick="checkSubscription()">✅ Проверить подписку</button>
             </div>
 
             <!-- РЕФЕРАЛЫ -->
             <div id="refs" class="tab-content">
                 <div class="empty-state">
-                    <p>👥 Нажмите кнопку ниже, чтобы увидеть список ваших рефералов в чате</p>
-                    <button class="button secondary" onclick="sendCommand('get_refs')">Показать рефералов</button>
+                    <p>👥 Нажмите кнопку ниже, чтобы увидеть список ваших рефералов</p>
+                    <button class="button secondary" onclick="getRefs()">Показать рефералов</button>
                 </div>
+                <div id="refsList"></div>
             </div>
 
             <!-- ТОП -->
             <div id="top" class="tab-content">
                 <div class="empty-state">
-                    <p>🏆 Нажмите кнопку ниже, чтобы увидеть топ-10 рефералов в чате</p>
-                    <button class="button secondary" onclick="sendCommand('get_top')">Показать топ</button>
+                    <p>🏆 Нажмите кнопку ниже, чтобы увидеть топ-10 рефералов</p>
+                    <button class="button secondary" onclick="getTop()">Показать топ</button>
                 </div>
+                <div id="topList"></div>
             </div>
 
             <!-- ДОСТИЖЕНИЯ -->
             <div id="achievements" class="tab-content">
-                <div class="empty-state">
-                    <p>🏅 Нажмите кнопку ниже, чтобы увидеть ваши достижения в чате</p>
-                    <button class="button secondary" onclick="sendCommand('get_achievements')">Показать достижения</button>
+                <div class="card">
+                    <h3>🏅 Ваши достижения</h3>
+                    <button class="button secondary" onclick="getAchievements()">Загрузить достижения</button>
+                    <div id="achievementsList" class="achievements-grid" style="margin-top: 15px;"></div>
                 </div>
             </div>
 
@@ -414,7 +470,7 @@
                 </div>
                 <div class="card">
                     <h3>📊 Статистика</h3>
-                    <button class="button secondary" onclick="sendCommand('get_stats')">📊 Получить графики</button>
+                    <button class="button secondary" onclick="getStats()">📊 Получить графики</button>
                 </div>
             </div>
         </div>
@@ -422,13 +478,17 @@
 
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script>
+        // Инициализация Telegram WebApp
         let tg = window.Telegram.WebApp;
         tg.ready();
+        tg.expand();
+
         let currentUserId = tg.initDataUnsafe?.user?.id;
         let isAdmin = false;
+        let currentUserData = null;
 
-        const adminIds = ['6411263772'];
-        if (currentUserId && adminIds.includes(String(currentUserId))) {
+        const adminIds = [6411263772];
+        if (currentUserId && adminIds.includes(currentUserId)) {
             isAdmin = true;
             document.getElementById('adminNavBtn').classList.add('visible');
         }
@@ -436,22 +496,15 @@
         // Отображение ID пользователя
         if (currentUserId) {
             document.getElementById('profileUserId').textContent = currentUserId;
+            loadUserProfile();
         } else {
-            document.getElementById('profileUserId').textContent = 'Не определён';
+            document.getElementById('profileUserId').textContent = 'Ошибка';
         }
-
-        // Установка реферальной ссылки (с username бота)
-        async function setRefLink() {
-            // Упрощённо: ссылка строится через username бота, но мы не знаем его тут статически.
-            // Лучше отправить команду боту и он ответит ссылкой в чате.
-            document.getElementById('refLink').textContent = 'Отправьте команду "Показать профиль" в чате';
-        }
-        setRefLink();
 
         function sendCommand(type, additional = {}) {
             const payload = { type, ...additional };
+            logger.info(f"📤 Отправка: {JSON.stringify(payload)}");
             tg.sendData(JSON.stringify(payload));
-            showNotification('✅ Команда отправлена боту', 'success');
         }
 
         function showNotification(msg, type = 'success') {
@@ -465,6 +518,22 @@
             }, 3000);
         }
 
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
+            document.getElementById(tabName)?.classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        // ============ ПРОФИЛЬ ============
+        async function loadUserProfile() {
+            try {
+                sendCommand('get_profile');
+            } catch (e) {
+                console.error('Ошибка загрузки профиля:', e);
+            }
+        }
+
         function updateName() {
             const newName = document.getElementById('newName').value.trim();
             if (!newName) {
@@ -475,15 +544,43 @@
             document.getElementById('newName').value = '';
         }
 
+        function getProfile() {
+            sendCommand('get_profile');
+        }
+
+        function checkSubscription() {
+            sendCommand('check_subscription');
+        }
+
         function copyRefLink() {
             const link = document.getElementById('refLink').textContent;
-            if (link && link !== 'Запросить в чате' && link !== 'Отправьте команду "Показать профиль" в чате') {
-                navigator.clipboard.writeText(link).then(() => showNotification('📋 Ссылка скопирована'));
+            if (link && link !== 'Запросить в боте') {
+                navigator.clipboard.writeText(link).then(() => {
+                    showNotification('📋 Ссылка скопирована');
+                }).catch(err => {
+                    showNotification('Ошибка копирования', 'error');
+                });
             } else {
-                showNotification('Сначала запросите профиль в чате', 'warning');
+                showNotification('Сначала загрузите профиль', 'warning');
             }
         }
 
+        // ============ РЕФЕРАЛЫ ============
+        function getRefs() {
+            sendCommand('get_refs');
+        }
+
+        // ============ ТОП ============
+        function getTop() {
+            sendCommand('get_top');
+        }
+
+        // ============ ДОСТИЖЕНИЯ ============
+        function getAchievements() {
+            sendCommand('get_achievements');
+        }
+
+        // ============ АДМИН ФУНКЦИИ ============
         function adminSearch() {
             const query = document.getElementById('searchQuery').value.trim();
             if (!query) {
@@ -525,12 +622,27 @@
             document.getElementById('bcText').value = '';
         }
 
-        function switchTab(tabName) {
-            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-            document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
-            document.getElementById(tabName)?.classList.add('active');
-            event.target.classList.add('active');
+        function getStats() {
+            sendCommand('get_stats');
         }
+
+        // ============ ОБРАБОТКА СООБЩЕНИЙ ОТ БОТА ============
+        // Обработка уведомлений от бота через Web App Close Button
+        tg.onEvent('webViewClosed', () => {
+            console.log('WebApp закрыто');
+        });
+
+        // Обработка данных через tg.onEvent (если поддерживается)
+        if (tg.onEvent) {
+            tg.onEvent('mainButtonClicked', () => {
+                console.log('Main button clicked');
+            });
+        }
+
+        // Логирование для отладки
+        console.log('WebApp инициализирован');
+        console.log('User ID:', currentUserId);
+        console.log('Is Admin:', isAdmin);
     </script>
 </body>
 </html>
