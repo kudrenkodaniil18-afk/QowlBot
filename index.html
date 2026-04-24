@@ -805,7 +805,7 @@
         // Получение refLink при загрузке
         window.addEventListener('load', () => {
             if (userId) {
-                const bot = 'qowlbot'; // Замените на реальное имя бота
+                const bot = 'qowl_bot'; // Замените на реальное имя бота
                 const refLink = `https://t.me/${bot}?start=${userId}`;
                 document.getElementById('refLink').textContent = refLink;
                 loadProfile();
