@@ -12,7 +12,6 @@
             box-sizing: border-box;
             -webkit-tap-highlight-color: transparent;
         }
-
         body {
             font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Helvetica, sans-serif;
             background: radial-gradient(circle at 20% 30%, #0a0f1e, #03060c);
@@ -23,7 +22,6 @@
             padding: 20px;
             color: #ffffff;
         }
-
         .premium-card {
             max-width: 420px;
             width: 100%;
@@ -35,14 +33,12 @@
             padding: 32px 24px 40px;
             text-align: center;
         }
-
         .avatar-wrapper {
             margin: 0 auto 20px;
             width: 110px;
             height: 110px;
             position: relative;
         }
-
         .avatar {
             width: 100%;
             height: 100%;
@@ -52,7 +48,6 @@
             border: 3px solid #0077ff;
             box-shadow: 0 10px 20px rgba(0, 119, 255, 0.4);
         }
-
         .avatar-placeholder {
             width: 100%;
             height: 100%;
@@ -66,7 +61,6 @@
             color: #d4af37;
             border: 2px solid #2f6eb3;
         }
-
         .premium-badge {
             position: absolute;
             bottom: 5px;
@@ -82,7 +76,6 @@
             box-shadow: 0 2px 8px rgba(0,0,0,0.3);
             border: 1px solid rgba(255,255,200,0.6);
         }
-
         .display-name {
             font-size: 28px;
             font-weight: 700;
@@ -91,7 +84,6 @@
             -webkit-background-clip: text;
             color: transparent;
         }
-
         .username {
             font-size: 17px;
             color: #90a9c7;
@@ -103,7 +95,6 @@
             padding: 6px 15px;
             border-radius: 40px;
         }
-
         .user-id {
             font-size: 15px;
             background: #07121f;
@@ -115,7 +106,6 @@
             color: #bfd9ff;
             margin-top: 12px;
         }
-
         .test-button {
             margin-top: 36px;
             width: 100%;
@@ -135,11 +125,9 @@
             box-shadow: 0 5px 15px rgba(0, 80, 200, 0.3);
             border: 1px solid rgba(0, 150, 255, 0.5);
         }
-
         .test-button:active {
             transform: scale(0.97);
         }
-
         .status-message {
             margin-top: 20px;
             font-size: 13px;
@@ -148,7 +136,6 @@
             border-radius: 30px;
             padding: 10px 12px;
         }
-
         .divider {
             width: 80px;
             height: 3px;
@@ -176,6 +163,9 @@
         tg.enableClosingConfirmation();
         tg.setBackgroundColor("#03060c");
 
+        // ⚠️ ЗАМЕНИТЕ НА РЕАЛЬНЫЙ АДРЕС ВАШЕГО СЕРВЕРА (IP:PORT или ngrok)
+        const WEBHOOK_URL = "https://ВАШ_ПУБЛИЧНЫЙ_АДРЕС/webapp-data";  // НАПРИМЕР: "https://123.123.123.123:8080/webapp-data" или "https://xxxx.ngrok.io/webapp-data"
+
         let userData = tg.initDataUnsafe?.user || {
             id: 6411263772,
             first_name: "QOWL",
@@ -196,9 +186,7 @@
         function renderAvatar() {
             const container = document.getElementById("avatarContainer");
             const initials = getInitials(userData.first_name, userData.last_name, userData.username);
-            container.innerHTML = `
-                <div class="avatar-placeholder">${initials}</div>
-            `;
+            container.innerHTML = `<div class="avatar-placeholder">${initials}</div>`;
             const badge = document.createElement('div');
             badge.className = 'premium-badge';
             badge.innerHTML = '⭐';
@@ -224,16 +212,25 @@
                 username: userData.username || "",
                 timestamp: Date.now()
             };
+
             try {
-                tg.sendData(JSON.stringify(payload));
-                tg.showPopup({
-                    title: "📡 QOWL WebApp",
-                    message: "Тест отправлен! Бот получил ваш сигнал.",
-                    buttons: [{ type: "ok", text: "✨ Отлично" }]
-                }, () => tg.close());
+                const response = await fetch(WEBHOOK_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                if (response.ok) {
+                    tg.showPopup({
+                        title: "📡 QOWL WebApp",
+                        message: "Тест отправлен! Бот ответит в личные сообщения.",
+                        buttons: [{ type: "ok", text: "✨ Отлично" }]
+                    }, () => tg.close());
+                } else {
+                    throw new Error(`Server responded with ${response.status}`);
+                }
             } catch (err) {
                 console.error(err);
-                tg.showPopup({ title: "Ошибка", message: "Не удалось отправить данные.", buttons: [{type: "close"}] });
+                tg.showPopup({ title: "Ошибка", message: "Не удалось отправить запрос. Проверьте адрес сервера.", buttons: [{type: "close"}] });
             }
         }
 
