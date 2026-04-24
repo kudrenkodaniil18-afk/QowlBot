@@ -1,21 +1,821 @@
 <!DOCTYPE html>
-<html>
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Тест связи</title>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <title>QOWL - Игра в Telegram</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a0a2e 100%);
+            color: #fff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* Навигация */
+        .navbar {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 8px;
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+        }
+
+        .nav-btn {
+            flex: 1;
+            padding: 10px;
+            background: rgba(212, 175, 55, 0.1);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            color: #d4af37;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            transition: all 0.3s;
+            text-align: center;
+        }
+
+        .nav-btn.active {
+            background: #d4af37;
+            color: #0a0a0a;
+            border-color: #d4af37;
+        }
+
+        .nav-btn:hover {
+            background: rgba(212, 175, 55, 0.2);
+        }
+
+        /* Контент */
+        .content {
+            flex: 1;
+            display: none;
+            animation: fadeIn 0.3s;
+        }
+
+        .content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Профиль */
+        .profile-card {
+            background: rgba(212, 175, 55, 0.1);
+            border: 2px solid #d4af37;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 15px;
+            backdrop-filter: blur(10px);
+        }
+
+        .profile-header {
+            text-align: center;
+            margin-bottom: 15px;
+            border-bottom: 1px solid rgba(212, 175, 55, 0.3);
+            padding-bottom: 15px;
+        }
+
+        .profile-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #d4af37 0%, #a68a2e 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            margin: 0 auto 10px;
+            border: 3px solid #d4af37;
+        }
+
+        .profile-name {
+            font-size: 18px;
+            font-weight: 700;
+            color: #d4af37;
+            margin: 8px 0;
+        }
+
+        .profile-id {
+            font-size: 12px;
+            color: #aaa;
+            font-family: monospace;
+        }
+
+        .profile-stat {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+        }
+
+        .profile-stat:last-child {
+            border-bottom: none;
+        }
+
+        .stat-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+        }
+
+        .stat-value {
+            font-weight: 700;
+            color: #d4af37;
+            font-size: 16px;
+        }
+
+        /* Форма */
+        .form-group {
+            margin-bottom: 12px;
+        }
+
+        label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: #d4af37;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: 8px;
+            color: #fff;
+            font-size: 14px;
+            font-family: inherit;
+            transition: all 0.3s;
+        }
+
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: #d4af37;
+            background: rgba(212, 175, 55, 0.1);
+            box-shadow: 0 0 10px rgba(212, 175, 55, 0.2);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        /* Кнопки */
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        button {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #d4af37 0%, #c9a227 100%);
+            color: #0a0a0a;
+            flex: 1;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(212, 175, 55, 0.4);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            background: rgba(212, 175, 55, 0.2);
+            color: #d4af37;
+            border: 1px solid #d4af37;
+            flex: 1;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(212, 175, 55, 0.3);
+        }
+
+        .btn-small {
+            padding: 8px 12px;
+            font-size: 12px;
+        }
+
+        /* Рефералы */
+        .refs-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .ref-item {
+            background: rgba(212, 175, 55, 0.1);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            padding: 12px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .ref-name {
+            font-weight: 600;
+            color: #d4af37;
+        }
+
+        .ref-date {
+            font-size: 12px;
+            color: #aaa;
+        }
+
+        /* Топ */
+        .top-item {
+            background: rgba(212, 175, 55, 0.1);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            padding: 12px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 8px;
+        }
+
+        .top-number {
+            font-size: 24px;
+            font-weight: 700;
+            color: #d4af37;
+            min-width: 40px;
+            text-align: center;
+        }
+
+        .top-info {
+            flex: 1;
+        }
+
+        .top-name {
+            font-weight: 600;
+            color: #d4af37;
+        }
+
+        .top-refs {
+            font-size: 12px;
+            color: #aaa;
+        }
+
+        /* Достижения */
+        .achievements-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+
+        .achievement {
+            background: rgba(212, 175, 55, 0.1);
+            border: 2px solid rgba(212, 175, 55, 0.3);
+            padding: 15px;
+            border-radius: 12px;
+            text-align: center;
+            transition: all 0.3s;
+        }
+
+        .achievement.earned {
+            border-color: #d4af37;
+            background: rgba(212, 175, 55, 0.2);
+        }
+
+        .achievement-icon {
+            font-size: 32px;
+            margin-bottom: 8px;
+        }
+
+        .achievement-name {
+            font-size: 12px;
+            font-weight: 600;
+            color: #d4af37;
+        }
+
+        /* Ссылка реф */
+        .ref-link-box {
+            background: rgba(212, 175, 55, 0.1);
+            border: 2px dashed #d4af37;
+            padding: 15px;
+            border-radius: 12px;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .ref-link-box p {
+            font-size: 12px;
+            color: #aaa;
+            margin-bottom: 8px;
+        }
+
+        .ref-link {
+            background: rgba(212, 175, 55, 0.2);
+            padding: 10px;
+            border-radius: 8px;
+            word-break: break-all;
+            font-size: 12px;
+            font-family: monospace;
+            color: #d4af37;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .ref-link:hover {
+            background: rgba(212, 175, 55, 0.3);
+        }
+
+        /* Статус */
+        .status-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(212, 175, 55, 0.1);
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            border: 1px solid rgba(212, 175, 55, 0.3);
+        }
+
+        .status-text {
+            font-size: 14px;
+        }
+
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .badge-success {
+            background: rgba(34, 197, 94, 0.2);
+            color: #22c55e;
+            border: 1px solid #22c55e;
+        }
+
+        .badge-danger {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+            border: 1px solid #ef4444;
+        }
+
+        /* Уведомления */
+        .notification {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #22c55e;
+            color: #fff;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            z-index: 1000;
+            animation: slideDown 0.3s;
+        }
+
+        .notification.error {
+            background: #ef4444;
+        }
+
+        @keyframes slideDown {
+            from {
+                transform: translateX(-50%) translateY(-100px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(-50%) translateY(0);
+                opacity: 1;
+            }
+        }
+
+        /* Текст информации */
+        .info-text {
+            background: rgba(212, 175, 55, 0.1);
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #d4af37;
+            margin-bottom: 15px;
+            line-height: 1.6;
+            font-size: 14px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #d4af37;
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(212, 175, 55, 0.2);
+            border-top-color: #d4af37;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Адаптив */
+        @media (max-height: 600px) {
+            .container {
+                padding: 5px;
+            }
+            .profile-card {
+                padding: 15px;
+            }
+        }
+
+        /* Скрытие элементов администратора */
+        .admin-only {
+            display: none;
+        }
+
+        .admin-only.visible {
+            display: block;
+        }
+    </style>
 </head>
 <body>
-    <button id="sendBtn">Отправить данные боту</button>
+    <div class="container">
+        <!-- Навигация -->
+        <div class="navbar">
+            <button class="nav-btn active" onclick="showTab('profile')">👤 Профиль</button>
+            <button class="nav-btn" onclick="showTab('refs')">👥 Рефералы</button>
+            <button class="nav-btn" onclick="showTab('top')">🏆 Топ</button>
+            <button class="nav-btn" onclick="showTab('achievements')">🏅 Достижения</button>
+            <button class="nav-btn admin-only" onclick="showTab('admin')">⚙️ Админ</button>
+        </div>
+
+        <!-- Профиль -->
+        <div id="profile" class="content active">
+            <div class="profile-card">
+                <div class="profile-header">
+                    <div class="profile-avatar">👤</div>
+                    <div class="profile-name" id="profileName">Загрузка...</div>
+                    <div class="profile-id" id="profileId"></div>
+                </div>
+                <div class="profile-stat">
+                    <div class="stat-label">👥 Рефералов</div>
+                    <div class="stat-value" id="profileRefs">0/10</div>
+                </div>
+                <div class="profile-stat">
+                    <div class="stat-label">📢 Подписка</div>
+                    <div class="stat-value" id="profileSub">🔴</div>
+                </div>
+                <div class="profile-stat">
+                    <div class="stat-label">🎮 Доступ к игре</div>
+                    <div class="stat-value" id="profileAccess">🔒</div>
+                </div>
+            </div>
+
+            <div class="ref-link-box">
+                <p>🔗 Ваша реферальная ссылка:</p>
+                <div class="ref-link" id="refLink" onclick="copyRefLink()">Загрузка...</div>
+            </div>
+
+            <div class="form-group">
+                <label>Изменить имя</label>
+                <div class="btn-group">
+                    <input type="text" id="newName" placeholder="Новое имя">
+                    <button class="btn-primary btn-small" onclick="updateName()">✓</button>
+                </div>
+            </div>
+
+            <button class="btn-primary" onclick="checkSubscription()" style="width: 100%;">
+                ✅ Проверить подписку
+            </button>
+        </div>
+
+        <!-- Рефералы -->
+        <div id="refs" class="content">
+            <h2 style="margin-bottom: 15px; color: #d4af37;">👥 Ваши рефералы</h2>
+            <div id="refsList" class="refs-list">
+                <div class="loading">
+                    <div class="spinner"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Топ -->
+        <div id="top" class="content">
+            <h2 style="margin-bottom: 15px; color: #d4af37;">🏆 Топ-10 рефералов</h2>
+            <div id="topList" class="refs-list">
+                <div class="loading">
+                    <div class="spinner"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Достижения -->
+        <div id="achievements" class="content">
+            <h2 style="margin-bottom: 15px; color: #d4af37;">🏅 Достижения</h2>
+            <div id="achievementsList" class="achievements-grid">
+                <div class="loading" style="grid-column: 1/-1;">
+                    <div class="spinner"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Админ панель -->
+        <div id="admin" class="content admin-only">
+            <h2 style="margin-bottom: 15px; color: #d4af37;">⚙️ Админ-панель</h2>
+
+            <!-- Поиск -->
+            <div class="profile-card">
+                <h3 style="color: #d4af37; margin-bottom: 10px; font-size: 14px;">🔍 Поиск пользователя</h3>
+                <div class="form-group">
+                    <input type="text" id="searchQuery" placeholder="ID или @username">
+                </div>
+                <button class="btn-primary" onclick="adminSearch()">Поиск</button>
+                <div id="searchResult" style="margin-top: 10px;"></div>
+            </div>
+
+            <!-- Бан/Разбан -->
+            <div class="profile-card">
+                <h3 style="color: #d4af37; margin-bottom: 10px; font-size: 14px;">🚫 Бан/Разбан</h3>
+                <div class="form-group">
+                    <input type="text" id="banUserId" placeholder="ID пользователя" pattern="[0-9]+">
+                </div>
+                <div class="btn-group">
+                    <button class="btn-primary" onclick="banUser()">🚫 Забанить</button>
+                    <button class="btn-secondary" onclick="unbanUser()">✅ Разбанить</button>
+                </div>
+            </div>
+
+            <!-- Рассылка -->
+            <div class="profile-card">
+                <h3 style="color: #d4af37; margin-bottom: 10px; font-size: 14px;">📢 Рассылка</h3>
+                <div class="form-group">
+                    <label>Заголовок</label>
+                    <input type="text" id="bcHeader" placeholder="Заголовок рассылки">
+                </div>
+                <div class="form-group">
+                    <label>Текст</label>
+                    <textarea id="bcText" placeholder="Текст рассылки"></textarea>
+                </div>
+                <button class="btn-primary" onclick="startBroadcast()">📢 Отправить рассылку</button>
+            </div>
+        </div>
+    </div>
+
     <script>
-        const tg = Telegram.WebApp;
-        tg.ready();
-        tg.expand();
-        document.getElementById('sendBtn').onclick = () => {
-            tg.sendData(JSON.stringify({ action: 'test', time: Date.now() }));
-            alert("Отправлено!");
-        };
+        // Telegram WebApp
+        let tg = window.Telegram?.WebApp;
+        let userId = null;
+        let isAdmin = false;
+
+        // Инициализация
+        if (tg) {
+            tg.ready();
+            tg.expand();
+            userId = tg.initDataUnsafe?.user?.id;
+            const params = new URLSearchParams(window.location.search);
+            isAdmin = params.get('admin') === '1';
+            if (isAdmin) {
+                document.querySelectorAll('.admin-only').forEach(el => el.classList.add('visible'));
+                document.querySelector('[onclick="showTab(\'admin\')"]').style.display = 'block';
+            }
+        }
+
+        // Отправка данных в бота
+        function sendData(data) {
+            if (tg) {
+                tg.sendData(JSON.stringify(data));
+            } else {
+                console.log('Data:', data);
+            }
+        }
+
+        // Уведомления
+        function notify(msg, isError = false) {
+            const notif = document.createElement('div');
+            notif.className = 'notification' + (isError ? ' error' : '');
+            notif.textContent = msg;
+            document.body.appendChild(notif);
+            setTimeout(() => notif.remove(), 3000);
+        }
+
+        // Переключение вкладок
+        function showTab(tabName) {
+            document.querySelectorAll('.content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
+            document.getElementById(tabName)?.classList.add('active');
+            event.target.classList.add('active');
+
+            if (tabName === 'profile') loadProfile();
+            else if (tabName === 'refs') loadRefs();
+            else if (tabName === 'top') loadTop();
+            else if (tabName === 'achievements') loadAchievements();
+        }
+
+        // Профиль
+        function loadProfile() {
+            sendData({ type: 'get_profile' });
+        }
+
+        function updateProfile(data) {
+            const [userId, username, refBy, refs, joinedAt, displayName] = data;
+            document.getElementById('profileName').textContent = displayName || username || 'Пользователь';
+            document.getElementById('profileId').textContent = `ID: ${userId}`;
+            document.getElementById('profileRefs').textContent = `${refs}/10`;
+            document.getElementById('profileSub').textContent = '🔴';
+            document.getElementById('profileAccess').textContent = refs >= 10 ? '✅' : '🔒';
+        }
+
+        function copyRefLink() {
+            const link = document.getElementById('refLink').textContent;
+            navigator.clipboard.writeText(link).then(() => notify('Ссылка скопирована!'));
+        }
+
+        function checkSubscription() {
+            sendData({ type: 'check_subscription' });
+            setTimeout(() => loadProfile(), 1000);
+        }
+
+        function updateName() {
+            const name = document.getElementById('newName').value.trim();
+            if (!name) {
+                notify('Введите имя', true);
+                return;
+            }
+            sendData({ type: 'update_name', name });
+            document.getElementById('newName').value = '';
+            setTimeout(() => loadProfile(), 500);
+        }
+
+        // Рефералы
+        function loadRefs() {
+            sendData({ type: 'get_refs' });
+        }
+
+        function displayRefs(refs) {
+            const list = document.getElementById('refsList');
+            if (!refs || refs.length === 0) {
+                list.innerHTML = '<div class="info-text">📭 У вас пока нет рефералов</div>';
+                return;
+            }
+            list.innerHTML = refs.map((ref, i) => `
+                <div class="ref-item">
+                    <div>
+                        <div class="ref-name">${i + 1}. ${ref[0] !== 'no_name' ? '@' + ref[0] : 'Аноним'}</div>
+                        <div class="ref-date">${ref[1]?.substring(0, 10) || ''}</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Топ
+        function loadTop() {
+            sendData({ type: 'get_top' });
+        }
+
+        function displayTop(top) {
+            const list = document.getElementById('topList');
+            if (!top || top.length === 0) {
+                list.innerHTML = '<div class="info-text">🏆 Топ пока пуст</div>';
+                return;
+            }
+            list.innerHTML = top.map((item, i) => `
+                <div class="top-item">
+                    <div class="top-number">#${i + 1}</div>
+                    <div class="top-info">
+                        <div class="top-name">@${item[1] || 'Unknown'}</div>
+                        <div class="top-refs">${item[2]} рефералов</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Достижения
+        function loadAchievements() {
+            sendData({ type: 'get_achievements' });
+        }
+
+        function displayAchievements(achievements) {
+            const list = document.getElementById('achievementsList');
+            const allAchievements = [
+                { icon: '🎮', name: 'Появление в боте' },
+                { icon: '📢', name: 'Подписка на канал' },
+                { icon: '👥', name: '10 рефералов' }
+            ];
+
+            list.innerHTML = allAchievements.map(ach => `
+                <div class="achievement ${achievements.includes(ach.name) ? 'earned' : ''}">
+                    <div class="achievement-icon">${ach.icon}</div>
+                    <div class="achievement-name">${ach.name}</div>
+                </div>
+            `).join('');
+        }
+
+        // Админ функции
+        function adminSearch() {
+            const query = document.getElementById('searchQuery').value.trim();
+            if (!query) return;
+            sendData({ type: 'search_user', query });
+        }
+
+        function displaySearchResult(result) {
+            document.getElementById('searchResult').innerHTML = `
+                <div class="info-text">
+                    <strong>ID:</strong> ${result[0]}<br>
+                    <strong>Username:</strong> @${result[1]}<br>
+                    <strong>Имя:</strong> ${result[4] || result[1]}<br>
+                    <strong>Рефералов:</strong> ${result[2]}<br>
+                    <strong>Дата:</strong> ${result[3]}
+                </div>
+            `;
+        }
+
+        function banUser() {
+            const userId = parseInt(document.getElementById('banUserId').value);
+            if (!userId) {
+                notify('Введите ID', true);
+                return;
+            }
+            sendData({ type: 'ban_user', user_id: userId });
+            document.getElementById('banUserId').value = '';
+        }
+
+        function unbanUser() {
+            const userId = parseInt(document.getElementById('banUserId').value);
+            if (!userId) {
+                notify('Введите ID', true);
+                return;
+            }
+            sendData({ type: 'unban_user', user_id: userId });
+            document.getElementById('banUserId').value = '';
+        }
+
+        function startBroadcast() {
+            const header = document.getElementById('bcHeader').value.trim();
+            const text = document.getElementById('bcText').value.trim();
+            if (!header || !text) {
+                notify('Заполните все поля', true);
+                return;
+            }
+            sendData({ type: 'start_broadcast', header, text });
+            document.getElementById('bcHeader').value = '';
+            document.getElementById('bcText').value = '';
+            notify('Рассылка запущена');
+        }
+
+        // Получение refLink при загрузке
+        window.addEventListener('load', () => {
+            if (userId) {
+                const bot = 'qowlbot'; // Замените на реальное имя бота
+                const refLink = `https://t.me/${bot}?start=${userId}`;
+                document.getElementById('refLink').textContent = refLink;
+                loadProfile();
+            }
+        });
+
+        // Интеграция с Telegram Bot API (обработка ответов)
+        if (tg && tg.onEvent) {
+            // Обработка событий от бота можно добавить здесь если нужно
+        }
     </script>
 </body>
 </html>
