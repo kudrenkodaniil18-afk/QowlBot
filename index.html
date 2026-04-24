@@ -17,31 +17,51 @@
 <div class="debug" id="debug"></div>
 
 <script>
+    // Ваш публичный ngrok-адрес с правильным путём
+    const SERVER_URL = "https://repent-fancy-sleeve.ngrok-free.dev/check_subscription";
+
     const debugDiv = document.getElementById('debug');
     function log(msg) {
         debugDiv.innerHTML += new Date().toLocaleTimeString() + ' ' + msg + '\n';
         debugDiv.scrollTop = debugDiv.scrollHeight;
         console.log(msg);
     }
+
+    let user_id = null;
     if (window.Telegram && Telegram.WebApp) {
         const tg = Telegram.WebApp;
         tg.expand();
         tg.ready();
-        log('✅ WebApp готов');
-        const user = tg.initDataUnsafe?.user;
-        log(`User ID: ${user?.id || 'неизвестно'}`);
-
-        document.getElementById('checkBtn').onclick = () => {
-            log('🔘 Нажата кнопка');
-            const payload = JSON.stringify({ type: "check_subscription" });
-            log(`📤 Отправка: ${payload}`);
-            tg.sendData(payload);
-            log('📨 Данные отправлены');
-            tg.showPopup({ title: "Отправлено", message: "Бот ответит в чат", buttons: [{type: "ok"}] });
-        };
+        user_id = tg.initDataUnsafe?.user?.id;
+        log(`✅ WebApp готов. User ID: ${user_id || 'неизвестно'}`);
     } else {
-        log('❌ Ошибка: не удалось инициализировать Telegram WebApp. Откройте страницу через бота.');
+        log('❌ Ошибка: не удалось инициализировать Telegram WebApp');
     }
+
+    document.getElementById('checkBtn').onclick = async () => {
+        log('🔘 Нажата кнопка');
+        if (!user_id) {
+            log('❌ Нет user_id. Откройте страницу через Telegram.');
+            return;
+        }
+        log(`📤 Отправка HTTP запроса на ${SERVER_URL} с user_id=${user_id}`);
+        try {
+            const response = await fetch(SERVER_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ user_id: user_id })
+            });
+            const data = await response.json();
+            log(`✅ Сервер ответил: ${JSON.stringify(data)}`);
+            if (data.status === 'ok') {
+                log(`📨 Результат проверки: ${data.subscribed ? 'Подписан' : 'Не подписан'}`);
+            } else {
+                log(`⚠️ Ошибка сервера: ${data.error}`);
+            }
+        } catch (e) {
+            log(`❌ Ошибка соединения: ${e.message}`);
+        }
+    };
 </script>
 </body>
 </html>
