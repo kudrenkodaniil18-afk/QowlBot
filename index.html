@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>QOWL Bot</title>
+    <title>Проверка подписки</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         * {
@@ -15,326 +15,93 @@
             background: var(--tg-theme-bg-color, #ffffff);
             color: var(--tg-theme-text-color, #000000);
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            padding: 16px;
-            padding-bottom: 70px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
         }
         .container {
-            max-width: 600px;
-            margin: 0 auto;
-        }
-        .card {
-            background: var(--tg-theme-secondary-bg-color, #f0f0f0);
-            border-radius: 16px;
-            padding: 20px;
-            margin-bottom: 20px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-        }
-        h2 {
-            font-size: 1.5rem;
-            margin-bottom: 16px;
-            color: var(--tg-theme-text-color, #000);
-        }
-        h3 {
-            font-size: 1.2rem;
-            margin: 12px 0 8px;
+            max-width: 400px;
+            width: 100%;
+            text-align: center;
         }
         button {
             background: var(--tg-theme-button-color, #2c7be5);
             color: var(--tg-theme-button-text-color, #ffffff);
             border: none;
             border-radius: 12px;
-            padding: 12px 20px;
-            font-size: 1rem;
-            font-weight: 500;
+            padding: 14px 24px;
+            font-size: 1.2rem;
+            font-weight: 600;
             width: 100%;
             cursor: pointer;
             transition: opacity 0.2s;
-            margin-top: 12px;
-        }
-        button:active { opacity: 0.7; }
-        .info-row {
-            display: flex;
-            justify-content: space-between;
-            padding: 8px 0;
-            border-bottom: 1px solid rgba(0,0,0,0.1);
-        }
-        .info-label { font-weight: 600; }
-        .info-value { color: var(--tg-theme-hint-color, #666); word-break: break-all; text-align: right; }
-        input, textarea {
-            width: 100%;
-            padding: 12px;
-            border-radius: 12px;
-            border: 1px solid var(--tg-theme-hint-color, #ccc);
-            background: var(--tg-theme-bg-color, #fff);
-            color: var(--tg-theme-text-color, #000);
-            margin: 8px 0;
-            font-size: 1rem;
-        }
-        .tab-bar {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            margin-bottom: 20px;
-            background: var(--tg-theme-secondary-bg-color, #eee);
-            padding: 8px;
-            border-radius: 20px;
-        }
-        .tab {
-            flex: 1;
-            text-align: center;
-            padding: 8px 0;
-            border-radius: 30px;
-            cursor: pointer;
-            background: transparent;
-            color: var(--tg-theme-text-color, #000);
-            font-weight: 500;
-        }
-        .tab.active {
-            background: var(--tg-theme-button-color, #2c7be5);
-            color: var(--tg-theme-button-text-color, #fff);
-        }
-        .hidden { display: none; }
-        .admin-section {
-            border-top: 2px solid gold;
             margin-top: 20px;
-            padding-top: 20px;
         }
-        .admin-badge {
-            background: gold;
-            color: black;
-            padding: 4px 10px;
-            border-radius: 30px;
-            font-size: 0.8rem;
-            display: inline-block;
-            margin-bottom: 12px;
+        button:active {
+            opacity: 0.7;
         }
-        .message {
-            background: rgba(0,0,0,0.05);
-            padding: 10px;
-            border-radius: 12px;
-            margin-top: 12px;
-            text-align: center;
+        .info {
+            margin-top: 30px;
+            padding: 16px;
+            background: var(--tg-theme-secondary-bg-color, #f0f0f0);
+            border-radius: 16px;
+            font-size: 0.9rem;
         }
-        @media (prefers-color-scheme: dark) {
-            .info-row { border-bottom-color: rgba(255,255,255,0.1); }
+        .status {
+            font-weight: bold;
+            margin-top: 10px;
+        }
+        h1 {
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+        }
+        .subscribed {
+            color: #00c853;
+        }
+        .not-subscribed {
+            color: #d32f2f;
         }
     </style>
 </head>
 <body>
-<div class="container" id="app">
-    <div class="tab-bar">
-        <div class="tab" data-tab="profile">👤 Профиль</div>
-        <div class="tab" data-tab="refs">👥 Рефералы</div>
-        <div class="tab" data-tab="achieve">🏆 Достижения</div>
-        <div class="tab" data-tab="top">📊 Топ</div>
-        <div class="tab" data-tab="subscription">📢 Подписка</div>
-    </div>
-
-    <!-- Профиль -->
-    <div id="profileTab" class="tab-content">
-        <div class="card">
-            <h2>📋 Мой профиль</h2>
-            <div id="profileInfo">Загрузка...</div>
-            <input type="text" id="newName" placeholder="Новое отображаемое имя">
-            <button id="updateNameBtn">Обновить имя</button>
-        </div>
-    </div>
-
-    <!-- Рефералы -->
-    <div id="refsTab" class="tab-content hidden">
-        <div class="card">
-            <h2>👥 Мои рефералы</h2>
-            <div id="refsList">Загрузка...</div>
-        </div>
-    </div>
-
-    <!-- Достижения -->
-    <div id="achieveTab" class="tab-content hidden">
-        <div class="card">
-            <h2>🏅 Мои достижения</h2>
-            <div id="achieveList">Загрузка...</div>
-        </div>
-    </div>
-
-    <!-- Топ -->
-    <div id="topTab" class="tab-content hidden">
-        <div class="card">
-            <h2>🏆 Топ-10 рефералов</h2>
-            <div id="topList">Загрузка...</div>
-        </div>
-    </div>
-
-    <!-- Подписка -->
-    <div id="subscriptionTab" class="tab-content hidden">
-        <div class="card">
-            <h2>📢 Проверка подписки</h2>
-            <button id="checkSubBtn">Проверить подписку</button>
-            <div id="subResult" class="message"></div>
-        </div>
-    </div>
-
-    <!-- Админ-панель (появится только для админов) -->
-    <div id="adminPanel" class="admin-section hidden">
-        <div class="card">
-            <span class="admin-badge">⚡ АДМИН ПАНЕЛЬ</span>
-            <h3>🔍 Поиск пользователя</h3>
-            <input type="text" id="searchQuery" placeholder="ID или @username">
-            <button id="searchUserBtn">Найти</button>
-            <div id="searchResult"></div>
-
-            <h3>🚫 Бан / Разбан</h3>
-            <input type="number" id="banUserId" placeholder="ID пользователя">
-            <button id="banUserBtn">Забанить</button>
-            <button id="unbanUserBtn">Разбанить</button>
-
-            <h3>📊 Статистика</h3>
-            <button id="statsBtn">Показать графики</button>
-
-            <h3>📢 Рассылка</h3>
-            <input type="text" id="bcHeader" placeholder="Заголовок">
-            <textarea id="bcText" rows="3" placeholder="Текст рассылки"></textarea>
-            <button id="startBroadcastBtn">Запустить рассылку</button>
-            <div id="bcResult"></div>
-        </div>
+<div class="container">
+    <h1>📢 Проверка подписки</h1>
+    <p>Нажмите кнопку, чтобы бот проверил вашу подписку на канал</p>
+    <button id="checkBtn">🔍 Проверить подписку</button>
+    <div class="info">
+        ℹ️ Результат придёт в чат с ботом.
+        <div class="status" id="statusMsg"></div>
     </div>
 </div>
 
 <script>
     const tg = window.Telegram.WebApp;
-    tg.expand(); // растягиваем на весь экран
+    tg.expand(); // разворачиваем на весь экран
     tg.ready();
 
-    // Вспомогательная функция отправки команды в бот
-    function sendCommand(type, data = {}) {
-        const payload = { type, ...data };
-        tg.sendData(JSON.stringify(payload));
-    }
+    const checkBtn = document.getElementById('checkBtn');
+    const statusDiv = document.getElementById('statusMsg');
 
-    // Получение профиля
-    function loadProfile() {
-        sendCommand("get_profile");
-    }
-
-    function loadRefs() {
-        sendCommand("get_refs");
-    }
-
-    function loadAchievements() {
-        sendCommand("get_achievements");
-    }
-
-    function loadTop() {
-        sendCommand("get_top");
-    }
-
-    function updateName() {
-        const name = document.getElementById("newName").value.trim();
-        if (name) {
-            sendCommand("update_name", { name });
-            document.getElementById("newName").value = "";
-        } else {
-            tg.showPopup({ title: "Ошибка", message: "Введите имя", buttons: [{type: "ok"}] });
-        }
-    }
-
-    function checkSubscription() {
-        sendCommand("check_subscription");
-        document.getElementById("subResult").innerHTML = "⏳ Проверка...";
-    }
-
-    // Админские функции
-    function searchUser() {
-        const query = document.getElementById("searchQuery").value.trim();
-        if (!query) return;
-        sendCommand("search_user", { query });
-    }
-
-    function banUser() {
-        const uid = document.getElementById("banUserId").value.trim();
-        if (!uid) return;
-        sendCommand("ban_user", { user_id: parseInt(uid) });
-        document.getElementById("banUserId").value = "";
-    }
-
-    function unbanUser() {
-        const uid = document.getElementById("banUserId").value.trim();
-        if (!uid) return;
-        sendCommand("unban_user", { user_id: parseInt(uid) });
-        document.getElementById("banUserId").value = "";
-    }
-
-    function showStats() {
-        sendCommand("get_stats");
-    }
-
-    function startBroadcast() {
-        const header = document.getElementById("bcHeader").value.trim();
-        const text = document.getElementById("bcText").value.trim();
-        if (!header || !text) {
-            tg.showPopup({ title: "Ошибка", message: "Заполните заголовок и текст", buttons: [{type: "ok"}] });
-            return;
-        }
-        sendCommand("start_broadcast", { header, text });
-        document.getElementById("bcHeader").value = "";
-        document.getElementById("bcText").value = "";
-        document.getElementById("bcResult").innerHTML = "⏳ Рассылка запущена, бот сообщит о результате в чат.";
-    }
-
-    // Проверка, админ ли пользователь (требует доработки бота)
-    function checkAdmin() {
-        sendCommand("check_admin");
-    }
-
-    // Обработка входящих сообщений от бота (через события мы не получаем, но можно показать уведомление)
-    // Бот отвечает в чат, поэтому здесь просто логируем.
-    // Для удобства добавим обработчик popup при получении ответов (но ответы идут в чат).
-    // Дополнительно можно слушать событие tg.onEvent('popupClosed'), но не обязательно.
-
-    // Переключение вкладок
-    document.querySelectorAll('.tab').forEach(tab => {
-        tab.addEventListener('click', () => {
-            const tabName = tab.dataset.tab;
-            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-            tab.classList.add('active');
-            document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
-            document.getElementById(`${tabName}Tab`).classList.remove('hidden');
-            // Загружаем данные при переключении
-            if (tabName === 'profile') loadProfile();
-            if (tabName === 'refs') loadRefs();
-            if (tabName === 'achieve') loadAchievements();
-            if (tabName === 'top') loadTop();
+    checkBtn.addEventListener('click', () => {
+        // Отправляем команду в бот
+        tg.sendData(JSON.stringify({ type: "check_subscription" }));
+        statusDiv.innerHTML = "⏳ Запрос отправлен... Ждите ответ в чате.";
+        statusDiv.style.color = "var(--tg-theme-hint-color, #888)";
+        // Можно также показать всплывающее уведомление
+        tg.showPopup({
+            title: "Отправлено",
+            message: "Бот проверит подписку и ответит в этом чате.",
+            buttons: [{type: "ok"}]
         });
     });
 
-    // Кнопки
-    document.getElementById("updateNameBtn").addEventListener("click", updateName);
-    document.getElementById("checkSubBtn").addEventListener("click", checkSubscription);
-    document.getElementById("searchUserBtn").addEventListener("click", searchUser);
-    document.getElementById("banUserBtn").addEventListener("click", banUser);
-    document.getElementById("unbanUserBtn").addEventListener("click", unbanUser);
-    document.getElementById("statsBtn").addEventListener("click", showStats);
-    document.getElementById("startBroadcastBtn").addEventListener("click", startBroadcast);
-
-    // Загружаем профиль и проверяем админа при старте
-    loadProfile();
-    checkAdmin();
-
-    // Простой обработчик для отображения результатов (когда бот присылает сообщение, мы не видим их внутри WebApp,
-    // но для удобства можно вывести уведомление, что команда отправлена.
-    // Реальные ответы приходят в чат Telegram.
-    tg.onEvent('popupClosed', () => {});
-    // Дополнительный способ: можно использовать MainButton для подтверждения
-    tg.MainButton.setText("Обновить").onClick(() => loadProfile()).hide();
-
-    // Функция для обновления профиля на странице (вызывается, когда бот ответил? Нет, мы не можем перехватить ответ.
-    // Поэтому профиль просто перезапрашивается, а обновление происходит при следующем открытии вкладки.
-    // Однако можно хранить данные в localStorage, но проще положиться на то, что пользователь обновит вкладку.
-    // Для наглядности добавим кнопку "Обновить" в профиле.
-    const refreshBtn = document.createElement("button");
-    refreshBtn.textContent = "🔄 Обновить профиль";
-    refreshBtn.style.marginTop = "10px";
-    refreshBtn.addEventListener("click", loadProfile);
-    document.querySelector("#profileTab .card").appendChild(refreshBtn);
+    // Необязательно: можно показать приветствие
+    if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
+        const user = tg.initDataUnsafe.user;
+        console.log(`Пользователь: ${user.first_name} (${user.id})`);
+    }
 </script>
 </body>
 </html>
