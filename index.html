@@ -42,6 +42,7 @@
             font-size: 1.4rem;
             font-weight: 700;
             background: linear-gradient(135deg, #fff, #d4af37);
+            -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
         }
@@ -81,6 +82,7 @@
             overflow-x: auto;
             white-space: nowrap;
             padding-bottom: 4px;
+            -webkit-overflow-scrolling: touch;
         }
         .tab {
             background: #1a1a1a;
@@ -135,6 +137,13 @@
             margin-top: 20px;
             color: #555;
         }
+        .error-message {
+            background: #8b0000;
+            padding: 12px;
+            border-radius: 16px;
+            margin-bottom: 16px;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
@@ -152,6 +161,8 @@
         <div class="weather-time" id="weatherDisplay">🌤️ Загрузка...</div>
     </div>
 </div>
+
+<div id="errorBanner" class="error-message" style="display: none;"></div>
 
 <div class="tabs" id="tabsContainer">
     <div class="tab active" data-tab="home">🏠 Главная</div>
@@ -229,31 +240,39 @@
     const BOT_TOKEN = "8638375796:AAGlo9QbXA_viI8VxDJ5QF2zWe6im9BgF0o";
     const BOT_USERNAME = "qowl_bot";
 
+    // Получение данных из Telegram WebApp
     let tg = window.Telegram?.WebApp;
     let user = { id: null, first_name: "Гость", username: "" };
+    let isInTelegram = false;
     if (tg) {
         tg.ready();
         tg.expand();
         user = tg.initDataUnsafe?.user || user;
+        isInTelegram = true;
     } else {
-        user.id = localStorage.getItem("test_user_id") || Math.floor(Math.random() * 1000000);
-        user.first_name = localStorage.getItem("test_name") || "Тестер";
-        user.username = localStorage.getItem("test_username") || "tester";
+        // Если не в Telegram, показываем ошибку
+        document.getElementById("errorBanner").style.display = "block";
+        document.getElementById("errorBanner").innerHTML = "❌ Приложение должно открываться через Telegram. Нажмите кнопку «Играть» в боте.";
+        // Блокируем кнопки
     }
-
     const userId = user.id;
     const firstName = user.first_name;
     const username = user.username || "";
     const photoUrl = user.photo_url || "";
+
+    // Определяем админство (по параметру URL)
     const urlParams = new URLSearchParams(window.location.search);
     const isAdmin = urlParams.get('admin') === '1';
 
-    // DOM элементы
+    // Элементы UI
     const userAvatar = document.getElementById("userAvatar");
     const userFullName = document.getElementById("userFullName");
     const userUsernameSpan = document.getElementById("userUsername");
     const refLinkInput = document.getElementById("refLinkInput");
     const editNameInput = document.getElementById("editName");
+    const errorBanner = document.getElementById("errorBanner");
+
+    // Кнопки
     const checkSubBtn = document.getElementById("checkSubBtn");
     const topBtn = document.getElementById("topBtn");
     const myAchievementsBtn = document.getElementById("myAchievementsBtn");
@@ -267,9 +286,15 @@
     const unbanUserBtn = document.getElementById("unbanUserBtn");
     const statsBtn = document.getElementById("statsBtn");
 
-    // Отправка команды боту (HTTP)
+    // Состояние регистрации пользователя
+    let isRegistered = false;
+
+    // Отправка команды боту через HTTP API
     async function sendCommand(command, params = "") {
-        if (!userId) { alert("Не удалось определить пользователя"); return; }
+        if (!userId) {
+            alert("Ошибка: не удалось определить ваш ID. Убедитесь, что вы открыли приложение через Telegram.");
+            return;
+        }
         let text = `/webapp_${command}`;
         if (params) text += `|${params}`;
         const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
@@ -280,44 +305,103 @@
                 body: JSON.stringify({ chat_id: userId, text: text })
             });
             const data = await response.json();
-            if (!data.ok) console.error("Ошибка отправки:", data);
-        } catch(e) { console.error("HTTP ошибка:", e); }
+            if (!data.ok) {
+                console.error("Ошибка:", data);
+                if (data.description && data.description.includes("user not found")) {
+                    errorBanner.style.display = "block";
+                    errorBanner.innerHTML = "❌ Вы не зарегистрированы в боте. Напишите /start боту, затем перезагрузите страницу.";
+                    isRegistered = false;
+                } else {
+                    alert("Ошибка связи с ботом. Проверьте, что вы начали диалог с ботом (отправьте /start).");
+                }
+            } else {
+                // Если команда была get_user_info и бот ответил успешно – считаем зарегистрированным
+                if (command === "get_user_info") {
+                    isRegistered = true;
+                    errorBanner.style.display = "none";
+                    enableButtons(true);
+                }
+            }
+        } catch(e) {
+            console.error("HTTP ошибка:", e);
+            alert("Сетевая ошибка. Проверьте интернет.");
+        }
     }
 
-    // Отправка команды /start для регистрации (важно!)
-    async function sendStartCommand() {
-        if (!userId) return;
+    // Включение/выключение кнопок
+    function enableButtons(enabled) {
+        const btns = [checkSubBtn, topBtn, myAchievementsBtn, showRefsBtn, saveProfileBtn, startBroadcastBtn, searchUserBtn, banUserBtn, unbanUserBtn, statsBtn];
+        btns.forEach(btn => {
+            if (btn) btn.disabled = !enabled;
+        });
+    }
+
+    // Проверка регистрации при загрузке
+    async function checkRegistration() {
+        if (!userId) {
+            errorBanner.style.display = "block";
+            errorBanner.innerHTML = "❌ Не удалось определить пользователя. Откройте приложение через Telegram.";
+            enableButtons(false);
+            return;
+        }
+        // Отправляем команду get_user_info (бот должен ответить, если пользователь есть)
+        let text = `/webapp_get_user_info`;
         const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
         try {
-            await fetch(url, {
+            const response = await fetch(url, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ chat_id: userId, text: "/start" })
+                body: JSON.stringify({ chat_id: userId, text: text })
             });
-        } catch(e) {}
+            const data = await response.json();
+            if (!data.ok) {
+                if (data.description && data.description.includes("user not found")) {
+                    errorBanner.style.display = "block";
+                    errorBanner.innerHTML = "❌ Вы не зарегистрированы в боте. Напишите /start боту, затем перезагрузите страницу.";
+                    enableButtons(false);
+                } else {
+                    errorBanner.style.display = "block";
+                    errorBanner.innerHTML = "❌ Ошибка связи. Убедитесь, что вы отправили /start боту.";
+                    enableButtons(false);
+                }
+                isRegistered = false;
+            } else {
+                isRegistered = true;
+                errorBanner.style.display = "none";
+                enableButtons(true);
+                // Автоматическая проверка подписки
+                sendCommand("check_subscription_auto");
+            }
+        } catch(e) {
+            console.error(e);
+            errorBanner.style.display = "block";
+            errorBanner.innerHTML = "❌ Сетевая ошибка. Проверьте интернет.";
+            enableButtons(false);
+        }
     }
 
-    // Обработчики
-    showRefsBtn.onclick = () => sendCommand("get_refs");
-    checkSubBtn.onclick = () => sendCommand("check_subscription_web");
-    topBtn.onclick = () => sendCommand("get_top");
-    myAchievementsBtn.onclick = () => sendCommand("get_achievements");
-    saveProfileBtn.onclick = () => {
+    // Обработчики кнопок (только если зарегистрированы)
+    if (showRefsBtn) showRefsBtn.onclick = () => sendCommand("get_refs");
+    if (checkSubBtn) checkSubBtn.onclick = () => sendCommand("check_subscription_web");
+    if (topBtn) topBtn.onclick = () => sendCommand("get_top");
+    if (myAchievementsBtn) myAchievementsBtn.onclick = () => sendCommand("get_achievements");
+    if (saveProfileBtn) saveProfileBtn.onclick = () => {
         const newName = editNameInput.value.trim();
         if (newName) sendCommand("update_name", newName);
         else alert("Введите имя");
     };
-    copyRefBtn.onclick = () => {
+    if (copyRefBtn) copyRefBtn.onclick = () => {
         refLinkInput.select();
         document.execCommand("copy");
         alert("Ссылка скопирована!");
     };
-    shareRefBtn.onclick = () => {
-        window.open(`https://t.me/share/url?url=${encodeURIComponent(refLinkInput.value)}&text=Присоединяйся к QOWL!`);
+    if (shareRefBtn) shareRefBtn.onclick = () => {
+        const link = refLinkInput.value;
+        window.open(`https://t.me/share/url?url=${encodeURIComponent(link)}&text=Присоединяйся к QOWL!`);
     };
 
     if (isAdmin) {
-        document.getElementById("adminTab").style.display = "block";
+        document.getElementById("adminTab").style.display = "flex";
         if (startBroadcastBtn) startBroadcastBtn.onclick = () => {
             const header = document.getElementById("bcHeader").value;
             const text = document.getElementById("bcText").value;
@@ -342,7 +426,7 @@
         if (statsBtn) statsBtn.onclick = () => sendCommand("get_stats");
     }
 
-    // Аватар и профиль
+    // Отображение профиля
     if (photoUrl) userAvatar.src = photoUrl;
     else {
         const canvas = document.createElement('canvas');
@@ -355,13 +439,19 @@
         ctx.fillText((firstName[0] || "Q").toUpperCase(), 20, 44);
         userAvatar.src = canvas.toDataURL();
     }
-    userFullName.innerHTML = `${firstName} ${user.is_premium ? '<span class="badge">⭐ PREMIUM</span>' : ''}`;
+    const fullName = firstName;
+    userFullName.innerHTML = `${fullName} ${user.is_premium ? '<span class="badge">⭐ PREMIUM</span>' : ''}`;
     userUsernameSpan.innerText = username ? `@${username}` : "";
-    refLinkInput.value = `https://t.me/${BOT_USERNAME}?start=${userId}`;
+
+    const refLink = `https://t.me/${BOT_USERNAME}?start=${userId}`;
+    refLinkInput.value = refLink;
 
     // Время и погода
-    function updateTime() { document.getElementById("timeDisplay").innerHTML = `⏰ ${new Date().toLocaleTimeString()}`; }
-    updateTime(); setInterval(updateTime, 1000);
+    function updateTime() {
+        document.getElementById("timeDisplay").innerHTML = `⏰ ${new Date().toLocaleTimeString()}`;
+    }
+    updateTime();
+    setInterval(updateTime, 1000);
     async function fetchWeather() {
         try {
             const res = await fetch('https://ipapi.co/json/');
@@ -372,11 +462,14 @@
             const temp = weather.current_condition[0].temp_C;
             const desc = weather.current_condition[0].lang_ru[0].value;
             document.getElementById("weatherDisplay").innerHTML = `🌍 ${city} | 🌡️ ${temp}°C ${desc}`;
-        } catch(e) { document.getElementById("weatherDisplay").innerHTML = "🌤️ Погода недоступна"; }
+        } catch(e) {
+            document.getElementById("weatherDisplay").innerHTML = "🌤️ Погода недоступна";
+        }
     }
-    fetchWeather(); setInterval(fetchWeather, 600000);
+    fetchWeather();
+    setInterval(fetchWeather, 600000);
 
-    // Вкладки
+    // Переключение вкладок
     const tabs = document.querySelectorAll(".tab");
     const contents = document.querySelectorAll(".tab-content");
     function switchTab(tabId) {
@@ -386,12 +479,21 @@
         document.querySelector(`.tab[data-tab="${tabId}"]`).classList.add("active");
     }
     tabs.forEach(tab => {
-        if (tab.style.display !== "none") tab.addEventListener("click", () => switchTab(tab.getAttribute("data-tab")));
+        if (tab.style.display !== "none") {
+            tab.addEventListener("click", () => switchTab(tab.getAttribute("data-tab")));
+        }
     });
 
-    // Автоматическая регистрация и проверка подписки
-    sendStartCommand();                     // ← ОТПРАВЛЯЕМ /start
-    setTimeout(() => sendCommand("check_subscription_auto"), 2000);
+    // Запуск проверки регистрации после загрузки страницы
+    window.addEventListener('load', () => {
+        if (userId) {
+            checkRegistration();
+        } else {
+            errorBanner.style.display = "block";
+            errorBanner.innerHTML = "❌ Не удалось определить пользователя. Откройте приложение через Telegram.";
+            enableButtons(false);
+        }
+    });
 </script>
 </body>
 </html>
