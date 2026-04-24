@@ -20,79 +20,45 @@
             padding: 18px;
             margin-bottom: 16px;
         }
-        .profile-header {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-        }
+        .profile-header { display: flex; align-items: center; gap: 14px; }
         .avatar {
-            width: 64px;
-            height: 64px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 2px solid #d4af37;
+            width: 64px; height: 64px; border-radius: 50%;
+            object-fit: cover; border: 2px solid #d4af37;
             background: #1a1a1a;
         }
         .profile-name {
-            font-size: 1.4rem;
-            font-weight: 700;
+            font-size: 1.4rem; font-weight: 700;
             background: linear-gradient(135deg, #fff, #d4af37);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
+            -webkit-background-clip: text; background-clip: text; color: transparent;
         }
         .profile-username { font-size: 0.8rem; color: #aaa; margin-top: 4px; }
         .badge { background: #d4af37; color: #000; border-radius: 30px; padding: 2px 10px; font-size: 0.65rem; font-weight: bold; margin-left: 8px; }
         button {
             background: linear-gradient(135deg, #d4af37, #b8942e);
-            border: none;
-            border-radius: 40px;
-            padding: 10px 18px;
-            font-weight: 600;
-            font-size: 0.85rem;
-            color: #0a0a0a;
-            cursor: pointer;
-            transition: 0.1s;
-            margin: 4px;
+            border: none; border-radius: 40px; padding: 10px 18px;
+            font-weight: 600; font-size: 0.85rem; color: #0a0a0a;
+            cursor: pointer; transition: 0.1s; margin: 4px;
         }
         button:active { transform: scale(0.96); }
         .secondary-btn { background: #2a2a2a; color: #d4af37; border: 1px solid #d4af37; }
         .danger-btn { background: #8b0000; color: #fff; }
         .tabs {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 20px;
-            overflow-x: auto;
-            white-space: nowrap;
-            padding-bottom: 4px;
+            display: flex; gap: 8px; margin-bottom: 20px;
+            overflow-x: auto; white-space: nowrap; padding-bottom: 4px;
         }
         .tab {
-            background: #1a1a1a;
-            padding: 8px 18px;
-            border-radius: 40px;
-            font-weight: 500;
-            cursor: pointer;
-            border: 1px solid #333;
-            color: #ccc;
+            background: #1a1a1a; padding: 8px 18px; border-radius: 40px;
+            font-weight: 500; cursor: pointer; border: 1px solid #333; color: #ccc;
             flex-shrink: 0;
         }
-        .tab.active {
-            background: #d4af37;
-            color: #0a0a0a;
-            border-color: #d4af37;
-        }
+        .tab.active { background: #d4af37; color: #0a0a0a; border-color: #d4af37; }
         .tab-content { display: none; animation: fade 0.2s; }
         .tab-content.active { display: block; }
         @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
         input, textarea {
-            width: 100%;
-            padding: 12px 16px;
-            border-radius: 28px;
-            border: 1px solid #444;
-            background: #111;
-            color: #fff;
-            font-size: 1rem;
-            margin-bottom: 12px;
+            width: 100%; padding: 12px 16px; border-radius: 28px;
+            border: 1px solid #444; background: #111; color: #fff;
+            font-size: 1rem; margin-bottom: 12px;
         }
         input:focus, textarea:focus { outline: none; border-color: #d4af37; }
         .info-row { display: flex; justify-content: space-between; margin-top: 14px; gap: 8px; flex-wrap: wrap; }
@@ -130,7 +96,6 @@
         <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 8px;">
             <button id="checkSubBtn">📌 Проверить подписку</button>
             <button id="topBtn">🏆 Топ рефералов</button>
-            <button id="myAchievementsBtn">🏅 Достижения</button>
         </div>
         <div style="margin-top: 18px; text-align: center;">
             <p>🔗 Реферальная ссылка:</p>
@@ -189,15 +154,15 @@
     </div>
 </div>
 
-<footer>QOWL World — данные с сервера бота</footer>
+<footer>QOWL World — данные напрямую с сервера</footer>
 
 <script>
-    // ================= КОНФИГУРАЦИЯ =================
-    const API_BASE_URL = "http://localhost:8080";   // замените на ваш публичный адрес (например, https://your-ngrok.ngrok.io)
+    // ================= НАСТРОЙКИ =================
+    const API_BASE_URL = "http://localhost:8080";   // 👈 ЗАМЕНИТЕ НА ВАШ ПУБЛИЧНЫЙ АДРЕС (например, https://abc123.ngrok.io)
     const BOT_TOKEN = "8638375796:AAGlo9QbXA_viI8VxDJ5QF2zWe6im9BgF0o";
     const BOT_USERNAME = "qowl_bot";
 
-    // Получение user_id из Telegram или из localStorage для теста
+    // Получаем данные пользователя из Telegram WebApp
     let tg = window.Telegram?.WebApp;
     let userId = null;
     let firstName = "Гость";
@@ -214,7 +179,7 @@
         photoUrl = user.photo_url || "";
         isPremium = user.is_premium || false;
     } else {
-        // fallback для теста
+        // Для теста вне Telegram
         userId = localStorage.getItem("test_user_id");
         if (!userId) {
             userId = Math.floor(Math.random() * 1000000);
@@ -224,8 +189,9 @@
         username = localStorage.getItem("test_username") || "tester";
     }
 
-    // Определяем админа (по списку ADMINS из бота – можно захардкодить или получить с сервера)
-    const isAdmin = false; // тут нужно будет определить по userId, но для простоты пока false
+    // Определяем админа (можно захардкодить по userId)
+    const ADMIN_IDS = [6411263772];
+    const isAdmin = ADMIN_IDS.includes(userId);
 
     // DOM элементы
     const userAvatar = document.getElementById("userAvatar");
@@ -248,7 +214,8 @@
                 referralsListDiv.innerHTML = "<div>У вас пока нет рефералов.</div>";
             }
         } catch(e) {
-            referralsListDiv.innerHTML = "<div>Ошибка загрузки рефералов. Убедитесь, что бот запущен.</div>";
+            referralsListDiv.innerHTML = "<div>Ошибка загрузки рефералов. Убедитесь, что бот запущен и адрес API правильный.</div>";
+            console.error(e);
         }
     }
 
@@ -273,17 +240,14 @@
             const resp = await fetch(`${API_BASE_URL}/api/profile?user_id=${userId}`);
             const data = await resp.json();
             if (data.display_name) {
-                document.getElementById("userFullName").innerHTML = `${data.display_name} ${isPremium ? '<span class="badge">⭐ PREMIUM</span>' : ''}`;
+                userFullName.innerHTML = `${data.display_name} ${isPremium ? '<span class="badge">⭐ PREMIUM</span>' : ''}`;
             } else {
-                document.getElementById("userFullName").innerHTML = `${firstName} ${isPremium ? '<span class="badge">⭐ PREMIUM</span>' : ''}`;
-            }
-            if (data.referrals_count !== undefined) {
-                // можно отобразить количество где-то, но пока не нужно
+                userFullName.innerHTML = `${firstName} ${isPremium ? '<span class="badge">⭐ PREMIUM</span>' : ''}`;
             }
         } catch(e) {}
     }
 
-    // ================= ОТПРАВКА КОМАНД В БОТА ЧЕРЕЗ HTTP =================
+    // ================= ОТПРАВКА КОМАНД В БОТА ЧЕРЕЗ HTTP (для действий, требующих ответа в чате) =================
     async function sendCommand(command, params = "") {
         if (!userId) return;
         let text = `/webapp_${command}`;
@@ -301,7 +265,6 @@
     // ================= ОБРАБОТЧИКИ КНОПОК =================
     document.getElementById("checkSubBtn").onclick = () => sendCommand("check_subscription_web");
     document.getElementById("topBtn").onclick = async () => {
-        // Покажем топ прямо в приложении (через API)
         try {
             const resp = await fetch(`${API_BASE_URL}/api/top`);
             const data = await resp.json();
@@ -316,7 +279,6 @@
             alert("Не удалось загрузить топ.");
         }
     };
-    document.getElementById("myAchievementsBtn").onload = loadAchievements; // уже загружено при старте, но можно обновить
     document.getElementById("saveProfileBtn").onclick = () => {
         const newName = editNameInput.value.trim();
         if (newName) sendCommand("update_name", newName);
@@ -331,7 +293,7 @@
         window.open(`https://t.me/share/url?url=${encodeURIComponent(refLinkInput.value)}&text=Присоединяйся к QOWL!`);
     };
 
-    // Админские кнопки (если isAdmin, иначе скрыть)
+    // Админские кнопки (показываем только если isAdmin)
     if (isAdmin) {
         document.getElementById("adminTab").style.display = "flex";
         document.getElementById("startBroadcastBtn").onclick = () => {
@@ -411,15 +373,23 @@
         if (tabId === "profile") loadProfile();
     }
     tabs.forEach(tab => {
-        tab.addEventListener("click", () => switchTab(tab.getAttribute("data-tab")));
+        if (tab.style.display !== "none") {
+            tab.addEventListener("click", () => switchTab(tab.getAttribute("data-tab")));
+        }
     });
 
-    // Автоматическая проверка подписки при старте (не выдаёт уведомление)
-    setTimeout(() => sendCommand("check_subscription_auto"), 1500);
     // Загружаем начальные данные
     loadReferrals();
     loadAchievements();
     loadProfile();
+
+    // Автоматическая проверка подписки (без уведомления)
+    setTimeout(async () => {
+        if (!userId) return;
+        try {
+            await fetch(`${API_BASE_URL}/api/check_subscription?user_id=${userId}`);
+        } catch(e) {}
+    }, 1500);
 </script>
 </body>
 </html>
