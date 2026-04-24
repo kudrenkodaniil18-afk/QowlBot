@@ -6,77 +6,42 @@
     <title>Проверка подписки</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        body {
-            background: var(--tg-theme-bg-color, #ffffff);
-            color: var(--tg-theme-text-color, #000000);
-            font-family: sans-serif;
-            padding: 20px;
-            text-align: center;
-        }
-        button {
-            background: var(--tg-theme-button-color, #2c7be5);
-            color: var(--tg-theme-button-text-color, white);
-            border: none;
-            border-radius: 12px;
-            padding: 14px 24px;
-            font-size: 1.2rem;
-            width: 100%;
-            cursor: pointer;
-        }
-        .debug {
-            margin-top: 30px;
-            padding: 16px;
-            background: var(--tg-theme-secondary-bg-color, #eee);
-            border-radius: 12px;
-            font-size: 0.8rem;
-            text-align: left;
-            white-space: pre-wrap;
-            word-break: break-word;
-        }
+        body { font-family: sans-serif; padding: 20px; text-align: center; }
+        button { background: #2c7be5; color: white; border: none; border-radius: 12px; padding: 14px 24px; font-size: 1.2rem; width: 100%; margin: 20px 0; cursor: pointer; }
+        .debug { background: #f0f0f0; padding: 10px; border-radius: 8px; font-family: monospace; font-size: 0.8rem; text-align: left; white-space: pre-wrap; max-height: 300px; overflow-y: auto; }
     </style>
 </head>
 <body>
-    <h1>📢 Проверка подписки</h1>
-    <button id="checkBtn">🔍 Проверить подписку</button>
-    <div class="debug" id="debug"></div>
+<h1>📢 Проверка подписки</h1>
+<button id="checkBtn">🔍 Проверить подписку</button>
+<div class="debug" id="debug"></div>
 
-    <script>
-        const debugDiv = document.getElementById('debug');
-        function log(msg) {
-            debugDiv.innerHTML += msg + '\n';
-            console.log(msg);
-        }
+<script>
+    const debugDiv = document.getElementById('debug');
+    function log(msg) {
+        debugDiv.innerHTML += new Date().toLocaleTimeString() + ' ' + msg + '\n';
+        debugDiv.scrollTop = debugDiv.scrollHeight;
+        console.log(msg);
+    }
+    if (window.Telegram && Telegram.WebApp) {
+        const tg = Telegram.WebApp;
+        tg.expand();
+        tg.ready();
+        log('✅ WebApp готов');
+        const user = tg.initDataUnsafe?.user;
+        log(`User ID: ${user?.id || 'неизвестно'}`);
 
-        // Проверяем, что мы внутри Telegram
-        if (window.Telegram && window.Telegram.WebApp) {
-            const tg = window.Telegram.WebApp;
-            tg.expand();
-            tg.ready();
-            log('✅ Telegram WebApp инициализирован');
-            log(`User ID: ${tg.initDataUnsafe?.user?.id || 'неизвестно'}`);
-        } else {
-            log('❌ ОШИБКА: Telegram WebApp не найден! Откройте страницу через бота, а не в браузере.');
-        }
-
-        const checkBtn = document.getElementById('checkBtn');
-        checkBtn.addEventListener('click', () => {
+        document.getElementById('checkBtn').onclick = () => {
             log('🔘 Нажата кнопка');
-            if (window.Telegram && window.Telegram.WebApp) {
-                const tg = window.Telegram.WebApp;
-                const payload = JSON.stringify({ type: "check_subscription" });
-                log(`📤 Отправляем: ${payload}`);
-                tg.sendData(payload);
-                log('📨 Данные отправлены в бота');
-                tg.showPopup({
-                    title: "Отправлено",
-                    message: "Бот проверит подписку и ответит в чат.",
-                    buttons: [{type: "ok"}]
-                });
-            } else {
-                log('❌ Невозможно отправить – WebApp не активен');
-                alert('Откройте приложение через Telegram!');
-            }
-        });
-    </script>
+            const payload = JSON.stringify({ type: "check_subscription" });
+            log(`📤 Отправка: ${payload}`);
+            tg.sendData(payload);
+            log('📨 Данные отправлены');
+            tg.showPopup({ title: "Отправлено", message: "Бот ответит в чат", buttons: [{type: "ok"}] });
+        };
+    } else {
+        log('❌ Ошибка: не удалось инициализировать Telegram WebApp. Откройте страницу через бота.');
+    }
+</script>
 </body>
 </html>
