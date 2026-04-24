@@ -2,1041 +2,528 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QOWL - Платформа</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+    <title>QOWL Premium WebApp</title>
+    <!-- Telegram WebApp SDK -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-        }
-
-        :root {
-            --primary: #0f1419;
-            --secondary: #1a1f2e;
-            --accent: #00d4ff;
-            --accent-dark: #0099cc;
-            --gold: #ffd700;
-            --turquoise: #00ced1;
-            --red: #ff4444;
-            --gray: #808080;
-            --text: #e0e0e0;
-            --text-dark: #999;
+            -webkit-tap-highlight-color: transparent;
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, var(--primary) 0%, #1a2a3a 100%);
-            color: var(--text);
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Helvetica, sans-serif;
+            background: radial-gradient(circle at 20% 30%, #0a0f1e, #03060c);
             min-height: 100vh;
-            padding-bottom: 80px;
-        }
-
-        .app {
-            max-width: 600px;
-            margin: 0 auto;
-            background: var(--primary);
-        }
-
-        /* ========== HEADER ========== */
-        .header {
-            background: linear-gradient(135deg, var(--secondary) 0%, #243a4f 100%);
-            border-bottom: 2px solid var(--accent);
-            padding: 20px;
-            text-align: center;
-            border-radius: 0 0 15px 15px;
-        }
-
-        .header h1 {
-            font-size: 32px;
-            color: var(--accent);
-            text-shadow: 0 0 10px rgba(0, 212, 255, 0.3);
-            margin-bottom: 5px;
-        }
-
-        /* ========== NAVIGATION ========== */
-        .nav-tabs {
-            display: flex;
-            background: var(--secondary);
-            border-bottom: 1px solid rgba(0, 212, 255, 0.2);
-            overflow-x: auto;
-            padding: 0 10px;
-            gap: 10px;
-        }
-
-        .nav-btn {
-            flex: 1;
-            padding: 12px 15px;
-            background: transparent;
-            border: none;
-            color: var(--text-dark);
-            cursor: pointer;
-            font-size: 11px;
-            font-weight: 600;
-            border-bottom: 3px solid transparent;
-            transition: all 0.3s;
-            white-space: nowrap;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            border-radius: 5px 5px 0 0;
-            min-width: 60px;
-        }
-
-        .nav-btn:hover {
-            color: var(--accent);
-            background: rgba(0, 212, 255, 0.1);
-        }
-
-        .nav-btn.active {
-            color: var(--accent);
-            border-bottom-color: var(--accent);
-            background: rgba(0, 212, 255, 0.15);
-        }
-
-        /* ========== CONTENT ========== */
-        .content-area {
-            padding: 20px;
-            min-height: 500px;
-        }
-
-        .tab-content {
-            display: none;
-            animation: slideIn 0.3s ease;
-        }
-
-        .tab-content.active {
-            display: block;
-        }
-
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        /* ========== CARDS ========== */
-        .card {
-            background: var(--secondary);
-            border: 1px solid rgba(0, 212, 255, 0.3);
-            border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 15px;
-            transition: all 0.3s;
-        }
-
-        .card:hover {
-            border-color: var(--accent);
-            background: rgba(0, 212, 255, 0.05);
-            box-shadow: 0 0 20px rgba(0, 212, 255, 0.2);
-        }
-
-        .card h3 {
-            color: var(--accent);
-            font-size: 16px;
-            text-transform: uppercase;
-            margin-bottom: 15px;
-            letter-spacing: 1px;
             display: flex;
             align-items: center;
-            gap: 10px;
+            justify-content: center;
+            padding: 20px;
+            color: #ffffff;
         }
 
-        /* ========== PROFILE CARD ========== */
-        .profile-header {
+        /* Основная карточка с эффектом стекла и синим акцентом */
+        .premium-card {
+            max-width: 420px;
+            width: 100%;
+            background: rgba(10, 20, 30, 0.65);
+            backdrop-filter: blur(12px);
+            border-radius: 48px;
+            border: 1px solid rgba(0, 100, 255, 0.35);
+            box-shadow: 0 25px 45px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(0, 160, 255, 0.15) inset;
+            padding: 32px 24px 40px;
+            transition: all 0.3s ease;
             text-align: center;
-            margin-bottom: 20px;
+        }
+
+        /* Декоративный блеск */
+        .glow {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .glow::before {
+            content: "";
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(0, 120, 255, 0.2) 0%, rgba(0, 0, 0, 0) 70%);
+            opacity: 0.5;
+            pointer-events: none;
+        }
+
+        /* Аватар */
+        .avatar-wrapper {
+            margin: 0 auto 20px;
+            width: 110px;
+            height: 110px;
+            position: relative;
         }
 
         .avatar {
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
-            border: 3px solid var(--accent);
-            margin: 0 auto 10px;
-            display: block;
-            object-fit: cover;
-        }
-
-        .profile-name {
-            font-size: 24px;
-            font-weight: 600;
-            color: var(--accent);
-            margin-bottom: 5px;
-        }
-
-        .profile-username {
-            color: var(--text-dark);
-            font-size: 14px;
-            margin-bottom: 10px;
-        }
-
-        .title-badge {
-            display: inline-block;
-            padding: 5px 15px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
-            text-transform: uppercase;
-            margin-bottom: 10px;
-        }
-
-        .title-badge.user { background: var(--gray); color: #000; }
-        .title-badge.pro { background: var(--gold); color: #000; }
-        .title-badge.legend { background: var(--turquoise); color: #000; }
-        .title-badge.admin { background: var(--red); color: #fff; }
-
-        .profile-stats {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 10px;
-            margin-top: 15px;
-        }
-
-        .stat-item {
-            background: rgba(0, 212, 255, 0.1);
-            padding: 12px;
-            border-radius: 8px;
-            text-align: center;
-            border: 1px solid rgba(0, 212, 255, 0.2);
-        }
-
-        .stat-value {
-            font-size: 20px;
-            font-weight: 700;
-            color: var(--accent);
-        }
-
-        .stat-label {
-            font-size: 12px;
-            color: var(--text-dark);
-            text-transform: uppercase;
-            margin-top: 3px;
-        }
-
-        /* ========== BUTTONS ========== */
-        .button {
             width: 100%;
-            padding: 12px;
-            margin-top: 10px;
-            border: none;
-            border-radius: 8px;
-            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%);
-            color: #000;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            font-size: 13px;
-        }
-
-        .button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(0, 212, 255, 0.3);
-        }
-
-        .button:active {
-            transform: translateY(0);
-        }
-
-        .button.secondary {
-            background: rgba(0, 212, 255, 0.15);
-            color: var(--accent);
-            border: 1px solid var(--accent);
-        }
-
-        .button.secondary:hover {
-            background: rgba(0, 212, 255, 0.25);
-        }
-
-        .button.small {
-            width: auto;
-            padding: 8px 15px;
-            margin: 5px;
-            display: inline-block;
-            font-size: 11px;
-        }
-
-        .button-group {
-            display: flex;
-            gap: 10px;
-            margin-top: 10px;
-        }
-
-        .button-group .button {
-            flex: 1;
-            margin-top: 0;
-        }
-
-        /* ========== FORMS ========== */
-        input, textarea, select {
-            width: 100%;
-            padding: 12px;
-            margin-bottom: 10px;
-            background: rgba(0, 212, 255, 0.05);
-            border: 1px solid rgba(0, 212, 255, 0.3);
-            border-radius: 8px;
-            color: var(--text);
-            font-size: 13px;
-            font-family: inherit;
-            transition: all 0.3s;
-        }
-
-        input:focus, textarea:focus, select:focus {
-            outline: none;
-            border-color: var(--accent);
-            background: rgba(0, 212, 255, 0.15);
-            box-shadow: 0 0 10px rgba(0, 212, 255, 0.2);
-        }
-
-        textarea {
-            resize: vertical;
-            min-height: 80px;
-        }
-
-        /* ========== LISTS ========== */
-        .user-item {
-            background: rgba(0, 212, 255, 0.05);
-            border: 1px solid rgba(0, 212, 255, 0.2);
-            border-radius: 8px;
-            padding: 12px;
-            margin-bottom: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .user-item:hover {
-            border-color: var(--accent);
-            background: rgba(0, 212, 255, 0.1);
-        }
-
-        .user-info {
-            flex: 1;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .user-avatar {
-            width: 40px;
-            height: 40px;
+            height: 100%;
             border-radius: 50%;
-            border: 2px solid var(--accent);
             object-fit: cover;
+            background: linear-gradient(135deg, #1e3a6f, #0a1a2f);
+            border: 3px solid #0077ff;
+            box-shadow: 0 10px 20px rgba(0, 119, 255, 0.4), 0 0 0 2px rgba(255, 215, 0, 0.3);
+            transition: transform 0.2s;
         }
 
-        .user-details {
-            flex: 1;
-        }
-
-        .user-name {
-            font-weight: 600;
-            color: var(--accent);
-            font-size: 14px;
-        }
-
-        .user-username {
-            font-size: 12px;
-            color: var(--text-dark);
-        }
-
-        .user-currency {
-            color: var(--gold);
-            font-weight: 600;
-            font-size: 14px;
+        .avatar-placeholder {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: linear-gradient(145deg, #0f2a44, #051322);
             display: flex;
             align-items: center;
-            gap: 5px;
-        }
-
-        /* ========== NOTIFICATIONS ========== */
-        .notification {
-            position: fixed;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: var(--accent);
-            color: #000;
-            padding: 12px 20px;
-            border-radius: 8px;
-            font-weight: 600;
-            z-index: 1000;
-            animation: slideDown 0.3s;
-            font-size: 13px;
-        }
-
-        .notification.error {
-            background: var(--red);
-            color: #fff;
-        }
-
-        .notification.warning {
-            background: #ff9800;
-            color: #000;
-        }
-
-        @keyframes slideDown {
-            from {
-                transform: translateX(-50%) translateY(-50px);
-                opacity: 0;
-            }
-            to {
-                transform: translateX(-50%) translateY(0);
-                opacity: 1;
-            }
-        }
-
-        /* ========== BOTTOM NAV ========== */
-        .bottom-nav {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: var(--secondary);
-            border-top: 1px solid rgba(0, 212, 255, 0.3);
-            display: flex;
-            justify-content: space-around;
-            padding: 10px 0;
-            max-width: 600px;
-            margin: 0 auto;
-        }
-
-        .bottom-nav-btn {
-            flex: 1;
-            padding: 10px;
-            background: transparent;
-            border: none;
-            color: var(--text-dark);
-            cursor: pointer;
-            font-size: 12px;
-            text-align: center;
-            transition: all 0.3s;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 5px;
-        }
-
-        .bottom-nav-btn:hover,
-        .bottom-nav-btn.active {
-            color: var(--accent);
-        }
-
-        /* ========== EMPTY STATE ========== */
-        .empty-state {
-            text-align: center;
-            padding: 40px 20px;
-            color: var(--text-dark);
-        }
-
-        .empty-state-icon {
+            justify-content: center;
             font-size: 48px;
-            margin-bottom: 10px;
-        }
-
-        .empty-state p {
-            font-size: 14px;
-            margin-bottom: 10px;
-        }
-
-        /* ========== CURRENCY DISPLAY ========== */
-        .currency {
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-            background: rgba(255, 215, 0, 0.2);
-            padding: 5px 10px;
-            border-radius: 5px;
-            color: var(--gold);
             font-weight: 600;
-            font-size: 12px;
+            color: #d4af37;
+            border: 2px solid #2f6eb3;
+            box-shadow: 0 0 12px rgba(0, 100, 255, 0.6);
         }
 
-        .currency-icon {
-            font-size: 16px;
-        }
-
-        /* ========== SOCIAL NETWORKS ========== */
-        .social-link {
-            display: inline-flex;
+        .premium-badge {
+            position: absolute;
+            bottom: 5px;
+            right: 5px;
+            background: linear-gradient(135deg, #f5b042, #d4af37);
+            border-radius: 30px;
+            width: 32px;
+            height: 32px;
+            display: flex;
             align-items: center;
-            gap: 5px;
-            padding: 5px 10px;
-            background: rgba(0, 212, 255, 0.1);
-            border: 1px solid rgba(0, 212, 255, 0.3);
-            border-radius: 5px;
-            color: var(--accent);
-            text-decoration: none;
-            font-size: 12px;
-            margin: 3px;
-            cursor: pointer;
-            transition: all 0.3s;
+            justify-content: center;
+            font-size: 18px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+            border: 1px solid rgba(255,255,200,0.6);
         }
 
-        .social-link:hover {
-            background: rgba(0, 212, 255, 0.2);
+        /* Информация */
+        .user-info {
+            margin: 8px 0 12px;
         }
 
-        /* ========== BAN NOTICE ========== */
-        .ban-notice {
-            background: rgba(255, 68, 68, 0.2);
-            border: 2px solid var(--red);
-            border-radius: 8px;
-            padding: 15px;
-            margin-bottom: 15px;
-            color: var(--red);
-            font-weight: 600;
+        .display-name {
+            font-size: 28px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #FFFFFF, #b0d4ff);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            letter-spacing: -0.3px;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.2);
         }
 
-        /* ========== LOADING ========== */
-        .loader {
+        .username {
+            font-size: 17px;
+            color: #90a9c7;
+            margin-top: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            background: rgba(0, 50, 100, 0.4);
+            width: fit-content;
+            margin-left: auto;
+            margin-right: auto;
+            padding: 6px 15px;
+            border-radius: 40px;
+            backdrop-filter: blur(4px);
+        }
+
+        .user-id {
+            font-size: 15px;
+            background: #07121f;
+            padding: 8px 16px;
+            border-radius: 40px;
             display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid rgba(0, 212, 255, 0.3);
-            border-radius: 50%;
-            border-top-color: var(--accent);
-            animation: spin 1s linear infinite;
+            font-family: monospace;
+            letter-spacing: 0.5px;
+            border: 1px solid #1f4977;
+            color: #bfd9ff;
+            margin-top: 12px;
         }
 
-        @keyframes spin {
-            to { transform: rotate(360deg); }
+        /* Кнопка теста */
+        .test-button {
+            margin-top: 36px;
+            width: 100%;
+            background: linear-gradient(95deg, #0a2a4a, #003366);
+            border: none;
+            padding: 16px 24px;
+            border-radius: 100px;
+            font-size: 18px;
+            font-weight: 600;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 5px 15px rgba(0, 80, 200, 0.3);
+            border: 1px solid rgba(0, 150, 255, 0.5);
         }
 
-        /* ========== RESPONSIVE ========== */
-        @media (max-width: 600px) {
-            .app { max-width: 100%; }
-            .bottom-nav { max-width: 100%; }
-            .profile-stats { grid-template-columns: repeat(2, 1fr); }
+        .test-button:active {
+            transform: scale(0.97);
+            background: linear-gradient(95deg, #002244, #002855);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+        }
+
+        .test-icon {
+            font-size: 22px;
+            filter: drop-shadow(0 0 2px gold);
+        }
+
+        /* статус / уведомление */
+        .status-message {
+            margin-top: 20px;
+            font-size: 13px;
+            color: #7d9ac0;
+            background: rgba(0,20,40,0.6);
+            border-radius: 30px;
+            padding: 10px 12px;
+            transition: 0.2s;
+            text-align: center;
+            backdrop-filter: blur(5px);
+        }
+
+        /* разделитель */
+        .divider {
+            width: 80px;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, #2f6eb3, #d4af37, #2f6eb3, transparent);
+            margin: 18px auto 8px;
+            border-radius: 5px;
+        }
+
+        /* адаптация */
+        @media (max-width: 480px) {
+            .premium-card {
+                padding: 24px 20px 32px;
+            }
+            .display-name {
+                font-size: 24px;
+            }
+        }
+
+        /* кастомный скролл */
+        ::-webkit-scrollbar {
+            width: 0;
+            background: transparent;
         }
     </style>
 </head>
 <body>
-    <div class="app">
-        <div class="header">
-            <h1>🎮 QOWL</h1>
-            <p>Платформа Геймеров</p>
+    <div class="premium-card glow">
+        <div class="avatar-wrapper" id="avatarContainer">
+            <!-- Динамически вставим аватар или плейсхолдер -->
         </div>
 
-        <div class="nav-tabs">
-            <button class="nav-btn active" onclick="switchTab('profile')">👤 Профиль</button>
-            <button class="nav-btn" onclick="switchTab('search')">🔍 Поиск</button>
-            <button class="nav-btn" onclick="switchTab('friends')">👥 Друзья</button>
-            <button class="nav-btn" onclick="switchTab('games')">🎮 Игры</button>
-            <button class="nav-btn admin-only" onclick="switchTab('admin')">⚙️ Админ</button>
+        <div class="user-info">
+            <div class="display-name" id="displayName">Загрузка...</div>
+            <div class="username" id="usernameSection">
+                <span>🔗</span> <span id="usernameText">@</span>
+            </div>
+            <div class="user-id" id="userIdText">🆔 ID: --</div>
         </div>
+        <div class="divider"></div>
 
-        <div class="content-area">
-            <!-- ПРОФИЛЬ -->
-            <div id="profile" class="tab-content active">
-                <div id="banNotice"></div>
-                
-                <div class="card profile-header">
-                    <img id="profileAvatar" class="avatar" alt="Avatar">
-                    <div class="profile-name" id="profileName">Загрузка...</div>
-                    <div class="profile-username" id="profileUsername">@username</div>
-                    <div id="profileTitle"></div>
-                    
-                    <div class="profile-stats">
-                        <div class="stat-item">
-                            <div class="stat-value" id="profileCurrency">0</div>
-                            <div class="stat-label">🧱 Шлакоблоки</div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="stat-value" id="profileRefs">0</div>
-                            <div class="stat-label">👥 Рефералы</div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="stat-value" id="profileGames">0</div>
-                            <div class="stat-label">🎮 Игры</div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="stat-value" id="profileWins">0</div>
-                            <div class="stat-label">✅ Побед</div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="card">
-                    <h3>🔧 Параметры</h3>
-                    <div style="margin-bottom: 15px;">
-                        <label>Изменить ник</label>
-                        <input type="text" id="newNick" placeholder="Новый ник (макс 20 символов)">
-                        <button class="button" onclick="changeNick()">💾 Сохранить</button>
-                        <p style="font-size: 11px; color: var(--text-dark); margin-top: 5px;">
-                            Первый раз бесплатно • 2 раз: 25 🧱 • 3 раз: 50 🧱 и больше
-                        </p>
-                    </div>
-                </div>
-
-                <div class="card">
-                    <h3>🌐 Социальные сети</h3>
-                    <input type="text" id="discord" placeholder="Discord">
-                    <input type="text" id="twitch" placeholder="Twitch">
-                    <input type="text" id="youtube" placeholder="YouTube">
-                    <input type="text" id="twitter" placeholder="Twitter">
-                    <input type="text" id="instagram" placeholder="Instagram">
-                    <button class="button" onclick="saveSocial()">💾 Сохранить</button>
-                </div>
-            </div>
-
-            <!-- ПОИСК -->
-            <div id="search" class="tab-content">
-                <div class="card">
-                    <h3>🔍 Поиск игроков</h3>
-                    <input type="text" id="searchQuery" placeholder="Введите ник или юзернейм...">
-                    <button class="button" onclick="searchUsers()">Поиск</button>
-                    <div id="searchResults" style="margin-top: 15px;"></div>
-                </div>
-            </div>
-
-            <!-- ДРУЗЬЯ -->
-            <div id="friends" class="tab-content">
-                <div class="card">
-                    <h3>👥 Мои друзья</h3>
-                    <div id="friendsList"></div>
-                </div>
-            </div>
-
-            <!-- ИГРЫ -->
-            <div id="games" class="tab-content">
-                <div class="card">
-                    <h3>🎮 Мои игры</h3>
-                    <div id="gamesList" style="text-align: center; color: var(--text-dark);">
-                        Выберите друга из списка и начните игру
-                    </div>
-                </div>
-            </div>
-
-            <!-- АДМИН -->
-            <div id="admin" class="tab-content">
-                <div class="card">
-                    <h3>🔍 Поиск пользователя</h3>
-                    <input type="text" id="adminSearchId" placeholder="Введите User ID">
-                    <button class="button" onclick="adminSearch()">Поиск</button>
-                    <div id="adminSearchResult" style="margin-top: 15px;"></div>
-                </div>
-
-                <div class="card">
-                    <h3>🚫 Бан / Разбан</h3>
-                    <input type="number" id="banUserId" placeholder="User ID">
-                    <input type="text" id="banReason" placeholder="Причина бана">
-                    <div class="button-group">
-                        <button class="button" onclick="adminBan()">🚫 Забанить</button>
-                        <button class="button secondary" onclick="adminUnban()">✅ Разбанить</button>
-                    </div>
-                </div>
-
-                <div class="card">
-                    <h3>📜 Смена титула</h3>
-                    <input type="number" id="titleUserId" placeholder="User ID">
-                    <select id="titleSelect">
-                        <option value="Пользователь">Пользователь (Серый)</option>
-                        <option value="Про">Про (Золотой)</option>
-                        <option value="Легенда">Легенда (Бирюзовый)</option>
-                        <option value="Админ">Админ (Красный)</option>
-                    </select>
-                    <button class="button" onclick="adminSetTitle()">📜 Установить</button>
-                </div>
-
-                <div class="card">
-                    <h3>💰 Выдать валюту</h3>
-                    <input type="number" id="currencyUserId" placeholder="User ID">
-                    <input type="number" id="currencyAmount" placeholder="Количество 🧱">
-                    <button class="button" onclick="adminAddCurrency()">💰 Выдать</button>
-                </div>
-            </div>
+        <button class="test-button" id="testBtn">
+            <span class="test-icon">⚡</span>
+            <span>Отправить тест боту</span>
+            <span class="test-icon">🎮</span>
+        </button>
+        <div class="status-message" id="statusMsg">
+            ✨ Готов к действию
         </div>
-    </div>
-
-    <div class="bottom-nav">
-        <button class="bottom-nav-btn active" onclick="switchTab('profile')">👤</button>
-        <button class="bottom-nav-btn" onclick="switchTab('search')">🔍</button>
-        <button class="bottom-nav-btn" onclick="switchTab('friends')">👥</button>
-        <button class="bottom-nav-btn" onclick="switchTab('games')">🎮</button>
     </div>
 
     <script>
-        // Конфигурация
-        const API_URL = 'http://localhost:8080/api';
+        // Инициализация Telegram WebApp
+        const tg = window.Telegram.WebApp;
         
-        // Получение параметров из URL
-        const urlParams = new URLSearchParams(window.location.search);
-        const currentUserId = parseInt(urlParams.get('user_id')) || 123456; // По умолчанию тестовый ID
-
-        // ============ ИНИЦИАЛИЗАЦИЯ ============
-        document.addEventListener('DOMContentLoaded', async () => {
-            console.log('Current User ID:', currentUserId);
-            await loadProfile();
+        // Расширяем на всё окно и задаём стили
+        tg.expand();
+        tg.enableClosingConfirmation(); // предупреждение при закрытии (премиум-фича)
+        tg.setBackgroundColor("#03060c");
+        tg.setHeaderColor("bg_color");
+        
+        // Используем primary цвет для кнопок в шапке (но у нас своя кнопка)
+        // Получаем данные пользователя из Telegram (безопасный контекст)
+        let userData = null;
+        let userAvatarUrl = null;
+        
+        // Пытаемся взять данные из initDataUnsafe
+        if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
+            userData = tg.initDataUnsafe.user;
+        } else {
+            // Fallback для тестов вне Telegram (например, веб预览) — добавим заглушку, но в реальном боте всегда приходят данные.
+            console.warn("WebApp запущен вне Telegram или данные не получены, используем тестовые данные.");
+            userData = {
+                id: 6411263772,
+                first_name: "QOWL",
+                last_name: "Premium",
+                username: "qowl_premium",
+                language_code: "ru",
+                is_premium: true,
+                photo_url: null
+            };
+        }
+        
+        // Дополнительно, если есть photo_url в user (бывает редко, но Telegram может дать)
+        if (userData && userData.photo_url) {
+            userAvatarUrl = userData.photo_url;
+        }
+        
+        // Функция для генерации инициалов (на случай если аватарки нет)
+        function getInitials(first, last, username) {
+            let initials = "";
+            if (first && first.length > 0) initials += first[0].toUpperCase();
+            if (last && last.length > 0) initials += last[0].toUpperCase();
+            if (initials.length === 0 && username && username.length > 0) initials = username[0].toUpperCase();
+            if (initials.length === 0) initials = "U";
+            return initials;
+        }
+        
+        // Создаём / обновляем аватар
+        function renderAvatar() {
+            const container = document.getElementById("avatarContainer");
+            if (!container) return;
             
-            // Проверяем, админ ли пользователь
-            checkAdminStatus();
-        });
-
-        // ============ ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ============
-        function showNotification(msg, type = 'success') {
-            const notif = document.createElement('div');
-            notif.className = `notification ${type}`;
-            notif.textContent = msg;
-            document.body.appendChild(notif);
-            setTimeout(() => {
-                notif.style.animation = 'slideDown 0.3s reverse';
-                setTimeout(() => notif.remove(), 300);
-            }, 3000);
-        }
-
-        function switchTab(tabName) {
-            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-            document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
-            document.querySelectorAll('.bottom-nav-btn').forEach(el => el.classList.remove('active'));
+            // Если есть прямая ссылка на аватар (редко, но возможно)
+            if (userAvatarUrl && userAvatarUrl.trim() !== "") {
+                container.innerHTML = `<img class="avatar" src="${userAvatarUrl}" alt="avatar" onerror="this.onerror=null; this.style.display='none'; document.getElementById('avatarPlaceholderFallback').style.display='flex';">`;
+                // добавим дополнительный placeholder на случай ошибки загрузки
+                const img = container.querySelector('img');
+                if (img) {
+                    img.onerror = () => {
+                        img.style.display = 'none';
+                        const fallbackDiv = document.createElement('div');
+                        fallbackDiv.className = 'avatar-placeholder';
+                        fallbackDiv.id = 'avatarPlaceholderFallback';
+                        const initials = getInitials(userData.first_name, userData.last_name, userData.username);
+                        fallbackDiv.innerText = initials;
+                        container.appendChild(fallbackDiv);
+                        // также добавим бейдж премиум если надо
+                        addPremiumBadge(container);
+                    };
+                }
+                // премиум бэйдж (если пользователь премиум)
+                addPremiumBadge(container);
+                return;
+            }
             
-            document.getElementById(tabName)?.classList.add('active');
-            document.querySelector(`[onclick="switchTab('${tabName}')"]`)?.classList.add('active');
-        }
-
-        function checkAdminStatus() {
-            const adminIds = [6411263772];
-            if (adminIds.includes(currentUserId)) {
-                document.querySelector('.admin-only').style.display = 'block';
-            }
-        }
-
-        // ============ ПРОФИЛЬ ============
-        async function loadProfile() {
-            try {
-                const response = await fetch(`${API_URL}/user/${currentUserId}`);
-                if (!response.ok) throw new Error('User not found');
-                
-                const user = await response.json();
-                
-                // Проверка на бан
-                if (user.is_banned) {
-                    const banNotice = document.getElementById('banNotice');
-                    banNotice.innerHTML = `
-                        <div class="ban-notice">
-                            🚫 Вы забанены<br>
-                            Причина: ${user.ban_info[0]}<br>
-                            Дата: ${new Date(user.ban_info[1]).toLocaleDateString()}
-                        </div>
-                    `;
-                }
-
-                // Обновляем профиль
-                document.getElementById('profileName').textContent = user.display_name;
-                document.getElementById('profileUsername').textContent = `@${user.username}`;
-                document.getElementById('profileAvatar').src = user.avatar_url;
-                document.getElementById('profileCurrency').textContent = user.currency;
-                document.getElementById('profileRefs').textContent = user.refs;
-
-                // Титул
-                const titleClass = user.title.toLowerCase();
-                document.getElementById('profileTitle').innerHTML = `
-                    <div class="title-badge ${titleClass}">${user.title}</div>
-                `;
-
-                // Статистика игр (нужна ещё одна API функция)
-                document.getElementById('profileGames').textContent = '0';
-                document.getElementById('profileWins').textContent = '0';
-
-            } catch (error) {
-                console.error('Error loading profile:', error);
-                showNotification('Ошибка загрузки профиля', 'error');
-            }
-        }
-
-        async function changeNick() {
-            const newNick = document.getElementById('newNick').value.trim();
-            if (!newNick || newNick.length > 20) {
-                showNotification('Неверный ник (макс 20 символов)', 'error');
-                return;
-            }
-
-            try {
-                const response = await fetch(`${API_URL}/change_nick`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ user_id: currentUserId, new_nick: newNick })
-                });
-
-                const data = await response.json();
-                if (data.success) {
-                    showNotification(`✅ Ник изменён! Стоимость: ${data.cost} 🧱`);
-                    document.getElementById('newNick').value = '';
-                    await loadProfile();
-                } else {
-                    showNotification(`Недостаточно средств. Нужно: ${data.cost} 🧱`, 'error');
-                }
-            } catch (error) {
-                console.error('Error:', error);
-                showNotification('Ошибка при изменении ника', 'error');
-            }
-        }
-
-        async function saveSocial() {
-            // TODO: Реализовать сохранение соцсетей
-            showNotification('Функция в разработке', 'warning');
-        }
-
-        // ============ ПОИСК ============
-        async function searchUsers() {
-            const query = document.getElementById('searchQuery').value.trim();
-            if (!query || query.length < 2) {
-                showNotification('Введите минимум 2 символа', 'error');
-                return;
-            }
-
-            try {
-                const response = await fetch(`${API_URL}/search`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ query })
-                });
-
-                const data = await response.json();
-                displaySearchResults(data.users);
-            } catch (error) {
-                console.error('Error:', error);
-                showNotification('Ошибка поиска', 'error');
-            }
-        }
-
-        function displaySearchResults(users) {
-            const resultsDiv = document.getElementById('searchResults');
-            if (users.length === 0) {
-                resultsDiv.innerHTML = '<div class="empty-state"><p>Пользователи не найдены</p></div>';
-                return;
-            }
-
-            resultsDiv.innerHTML = users.map(user => `
-                <div class="user-item" onclick="viewUserProfile(${user.user_id})">
-                    <div class="user-info">
-                        <img src="${user.avatar_url}" class="user-avatar" alt="">
-                        <div class="user-details">
-                            <div class="user-name">${user.display_name}</div>
-                            <div class="user-username">@${user.username}</div>
-                        </div>
-                    </div>
-                    <div class="user-currency">🧱 ${user.currency}</div>
+            // Если нет фото — создаём красивый плейсхолдер с инициалами
+            const initials = getInitials(userData.first_name, userData.last_name, userData.username);
+            container.innerHTML = `
+                <div class="avatar-placeholder" id="dynamicPlaceholder">
+                    ${initials}
                 </div>
-            `).join('');
+            `;
+            addPremiumBadge(container);
         }
-
-        function viewUserProfile(userId) {
-            // TODO: Показать профиль другого пользователя
-            showNotification('Профиль ' + userId, 'warning');
+        
+        // Добавление значка премиум (если аккаунт имеет Telegram Premium или просто для стиля)
+        function addPremiumBadge(container) {
+            // Удаляем старый бейдж, если есть
+            const oldBadge = container.querySelector('.premium-badge');
+            if (oldBadge) oldBadge.remove();
+            
+            // Решаем показывать ли бейдж: если is_premium === true или, для демонстрации, всегда добавляем "премиум шик"
+            let isPremiumUser = (userData && userData.is_premium === true);
+            // Даже если не премиум, в нашем веб-приложении тематика премиум — покажем золотую иконку
+            // для единообразия с дизайном — значок «премиум»
+            const badgeSpan = document.createElement('div');
+            badgeSpan.className = 'premium-badge';
+            badgeSpan.innerHTML = '⭐'; // или символ короны 👑
+            badgeSpan.setAttribute('aria-label', 'Premium');
+            container.appendChild(badgeSpan);
         }
-
-        // ============ ДРУЗЬЯ ============
-        async function loadFriends() {
-            try {
-                const response = await fetch(`${API_URL}/friends/${currentUserId}`);
-                const data = await response.json();
-                displayFriends(data.friends);
-            } catch (error) {
-                console.error('Error:', error);
-            }
-        }
-
-        function displayFriends(friends) {
-            const friendsDiv = document.getElementById('friendsList');
-            if (friends.length === 0) {
-                friendsDiv.innerHTML = '<div class="empty-state"><p>У вас нет друзей</p></div>';
+        
+        // Заполняем информацию о пользователе
+        function updateUserInfo() {
+            if (!userData) {
+                document.getElementById("displayName").innerText = "Гость";
+                document.getElementById("usernameText").innerText = "@unknown";
+                document.getElementById("userIdText").innerHTML = "🆔 ID: --";
                 return;
             }
-
-            friendsDiv.innerHTML = friends.map(friend => `
-                <div class="user-item">
-                    <div class="user-info">
-                        <img src="${friend.avatar_url}" class="user-avatar" alt="">
-                        <div class="user-details">
-                            <div class="user-name">${friend.display_name}</div>
-                            <div class="user-username">@${friend.username}</div>
-                        </div>
-                    </div>
-                    <div style="display: flex; gap: 5px;">
-                        <button class="button small" onclick="playWithFriend(${friend.user_id})">🎮</button>
-                        <button class="button small secondary" onclick="removeFriend(${friend.user_id})">✖️</button>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        async function removeFriend(friendId) {
-            try {
-                await fetch(`${API_URL}/remove_friend`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ user_id: currentUserId, friend_id: friendId })
-                });
-                showNotification('Друг удалён');
-                await loadFriends();
-            } catch (error) {
-                console.error('Error:', error);
+            
+            // Полное имя (first_name + last_name)
+            let fullName = userData.first_name || "";
+            if (userData.last_name) fullName += " " + userData.last_name;
+            if (fullName.trim() === "") fullName = userData.username || "Пользователь";
+            
+            const displayNameElem = document.getElementById("displayName");
+            displayNameElem.innerText = fullName;
+            
+            // Username
+            const usernameRaw = userData.username;
+            const usernameSpan = document.getElementById("usernameText");
+            if (usernameRaw && usernameRaw !== "") {
+                usernameSpan.innerText = "@" + usernameRaw;
+            } else {
+                usernameSpan.innerText = "нет username";
+            }
+            
+            // ID пользователя
+            const userIdElem = document.getElementById("userIdText");
+            userIdElem.innerHTML = `🆔 ID: <span style="font-family: monospace;">${userData.id}</span>`;
+            
+            // небольшой эффект: если премиум — добавим дополнительный блеск
+            if (userData.is_premium) {
+                const nameParent = document.querySelector('.display-name');
+                if (nameParent) nameParent.style.textShadow = "0 0 8px rgba(212, 175, 55, 0.5)";
             }
         }
-
-        function playWithFriend(friendId) {
-            showNotification('Игра с ' + friendId + ' запущена!');
-        }
-
-        // ============ АДМИН ============
-        async function adminSearch() {
-            const userId = parseInt(document.getElementById('adminSearchId').value);
-            if (!userId) {
-                showNotification('Введите User ID', 'error');
+        
+        // ========== ОТПРАВКА ТЕСТОВОГО СООБЩЕНИЯ БОТУ ==========
+        // Принцип: через Telegram.WebApp.sendData отправляем JSON с типом события "test"
+        // Бот должен обрабатывать message с типом web_app_data. В текущем коде бота этого обработчика нет,
+        // но мы его добавляем прямо сейчас (описание в комментариях). Но в веб-приложении достаточно отправить данные.
+        // Бот получит сообщение от пользователя с data, и сможет ответить.
+        async function sendTestToBot() {
+            const statusDiv = document.getElementById("statusMsg");
+            if (!userData) {
+                statusDiv.innerHTML = "❌ Ошибка: данные пользователя не загружены";
+                statusDiv.style.color = "#ffaa88";
+                setTimeout(() => {
+                    statusDiv.style.color = "#7d9ac0";
+                    statusDiv.innerHTML = "✨ Готов к действию";
+                }, 2000);
                 return;
             }
-
+            
+            // Формируем данные для отправки: action test, id и время
+            const testPayload = {
+                action: "test",
+                user_id: userData.id,
+                username: userData.username || "",
+                timestamp: Date.now(),
+                webapp: "qowl_premium"
+            };
+            
+            const jsonString = JSON.stringify(testPayload);
+            
             try {
-                const response = await fetch(`${API_URL}/user/${userId}`);
-                if (!response.ok) throw new Error('User not found');
+                // Отправляем через WebApp метод
+                tg.sendData(jsonString);
+                statusDiv.innerHTML = "✅ Тестовое сообщение отправлено боту! (ожидайте ответ)";
+                statusDiv.style.color = "#b8ffc8";
+                // дополнительно показываем попап? используем Telegram alert для премиум ощущения
+                tg.showPopup({
+                    title: "📡 QOWL WebApp",
+                    message: "Тест отправлен! Бот получил ваш сигнал.",
+                    buttons: [{type: "ok", text: "✨ Отлично", id: "ok"}]
+                }, (btnId) => {});
                 
-                const user = await response.json();
-                document.getElementById('adminSearchResult').innerHTML = `
-                    <div class="card">
-                        <div style="text-align: center;">
-                            <img src="${user.avatar_url}" class="avatar" style="width: 80px; height: 80px;">
-                            <div style="margin-top: 10px;">
-                                <div style="color: var(--accent); font-weight: 600;">${user.display_name}</div>
-                                <div style="color: var(--text-dark);">@${user.username}</div>
-                                <div style="margin-top: 10px;">
-                                    <span class="currency"><span class="currency-icon">🧱</span> ${user.currency}</span>
-                                </div>
-                                ${user.is_banned ? '<div class="ban-notice" style="margin-top: 10px;">🚫 ЗАБАНЕН</div>' : ''}
-                            </div>
-                        </div>
-                    </div>
-                `;
-            } catch (error) {
-                showNotification('Пользователь не найден', 'error');
-            }
-        }
-
-        async function adminBan() {
-            const userId = parseInt(document.getElementById('banUserId').value);
-            const reason = document.getElementById('banReason').value || 'Нарушение правил';
-
-            if (!userId) {
-                showNotification('Введите User ID', 'error');
-                return;
-            }
-
-            try {
-                const response = await fetch(`${API_URL}/admin/ban`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ admin_id: currentUserId, user_id: userId, reason })
+                // через 2 секунды вернуть стандартный статус
+                setTimeout(() => {
+                    if (document.getElementById("statusMsg")) {
+                        statusDiv.style.color = "#7d9ac0";
+                        statusDiv.innerHTML = "🎮 Готово. Ждите ответ бота!";
+                    }
+                }, 2500);
+            } catch (err) {
+                console.error("sendData error:", err);
+                statusDiv.innerHTML = "⚠️ Ошибка отправки. Убедитесь, что открыто внутри Telegram.";
+                statusDiv.style.color = "#ffaa88";
+                tg.showPopup({
+                    title: "Ошибка",
+                    message: "Не удалось отправить данные. Попробуйте позже.",
+                    buttons: [{type: "close"}]
                 });
-
-                if (response.ok) {
-                    showNotification('✅ Пользователь забанен');
-                    document.getElementById('banUserId').value = '';
-                    document.getElementById('banReason').value = '';
-                } else {
-                    showNotification('Ошибка при бане', 'error');
-                }
-            } catch (error) {
-                console.error('Error:', error);
-                showNotification('Ошибка', 'error');
             }
         }
-
-        async function adminUnban() {
-            const userId = parseInt(document.getElementById('banUserId').value);
-
-            if (!userId) {
-                showNotification('Введите User ID', 'error');
-                return;
-            }
-
-            try {
-                const response = await fetch(`${API_URL}/admin/unban`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ admin_id: currentUserId, user_id: userId })
+        
+        // Альтернативная отправка: можно также использовать прямой вызов через Bot API если бот имеет публичный токен?
+        // НО ТОКЕН НЕЛЬЗЯ ХРАНИТЬ НА КЛИЕНТЕ! Поэтому используем только sendData. Бот обработает и отправит ответное сообщение.
+        // В дополнение, можно через tg.openTelegramLink? но это не требуется.
+        
+        // Навешиваем обработчик на кнопку
+        function bindEvents() {
+            const testBtn = document.getElementById("testBtn");
+            if (testBtn) {
+                testBtn.addEventListener("click", (e) => {
+                    e.preventDefault();
+                    sendTestToBot();
                 });
-
-                if (response.ok) {
-                    showNotification('✅ Пользователь разбанен');
-                } else {
-                    showNotification('Ошибка при разбане', 'error');
-                }
-            } catch (error) {
-                console.error('Error:', error);
-                showNotification('Ошибка', 'error');
             }
         }
-
-        async function adminSetTitle() {
-            const userId = parseInt(document.getElementById('titleUserId').value);
-            const title = document.getElementById('titleSelect').value;
-
-            if (!userId) {
-                showNotification('Введите User ID', 'error');
-                return;
-            }
-
-            try {
-                const response = await fetch(`${API_URL}/admin/set_title`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ admin_id: currentUserId, user_id: userId, title })
-                });
-
-                if (response.ok) {
-                    showNotification(`✅ Титул "${title}" установлен`);
-                    document.getElementById('titleUserId').value = '';
-                } else {
-                    showNotification('Ошибка', 'error');
-                }
-            } catch (error) {
-                console.error('Error:', error);
-            }
+        
+        // ----- Запуск инициализации -----
+        function init() {
+            // дополнительные манипуляции, чтобы страница корректно вписалась в WebView
+            document.body.style.backgroundColor = "#03060c";
+            // Если тема темная (всегда dark в нашем случае)
+            tg.setBackgroundColor("#03060c");
+            // рендер аватара и данных
+            renderAvatar();
+            updateUserInfo();
+            bindEvents();
+            
+            // Сообщаем, что WebApp готов и отображает контент
+            tg.ready();
+            
+            // Дополнительно: слушаем изменения темы на случай если телеграм переключит (но мы фикс темная)
+            tg.onEvent('themeChanged', () => {
+                // оставляем свою цветовую схему
+                document.body.style.backgroundColor = "#03060c";
+            });
+            
+            // лог успешной загрузки
+            console.log("QOWL Premium WebApp loaded, user:", userData?.id);
         }
-
-        async function adminAddCurrency() {
-            const userId = parseInt(document.getElementById('currencyUserId').value);
-            const amount = parseInt(document.getElementById('currencyAmount').value);
-
-            if (!userId || !amount || amount <= 0) {
-                showNotification('Введите корректные данные', 'error');
-                return;
-            }
-
-            try {
-                const response = await fetch(`${API_URL}/admin/add_currency`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ admin_id: currentUserId, user_id: userId, amount })
-                });
-
-                const data = await response.json();
-                if (data.success) {
-                    showNotification(`✅ Выдано ${amount} 🧱. Новый баланс: ${data.new_balance}`);
-                    document.getElementById('currencyUserId').value = '';
-                    document.getElementById('currencyAmount').value = '';
-                } else {
-                    showNotification('Ошибка', 'error');
-                }
-            } catch (error) {
-                console.error('Error:', error);
-            }
+        
+        // Запускаем после загрузки DOM
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', init);
+        } else {
+            init();
         }
-
-        // События переключения табов
-        document.addEventListener('click', (e) => {
-            if (e.target.onclick?.toString().includes("switchTab('friends')")) {
-                setTimeout(loadFriends, 100);
+        
+        // Доп. эстетика: обрабатываем возможные ошибки с картинкой аватара (подстраховка)
+        window.addEventListener('error', function(e) {
+            if (e.target.tagName === 'IMG' && e.target.classList.contains('avatar')) {
+                console.log("Avatar failed to load, using placeholder");
+                const container = document.getElementById('avatarContainer');
+                if (container && !container.querySelector('.avatar-placeholder')) {
+                    const initials = getInitials(userData?.first_name, userData?.last_name, userData?.username);
+                    const placeholderDiv = document.createElement('div');
+                    placeholderDiv.className = 'avatar-placeholder';
+                    placeholderDiv.innerText = initials;
+                    container.innerHTML = '';
+                    container.appendChild(placeholderDiv);
+                    addPremiumBadge(container);
+                }
             }
         });
+        
+        // Добавляем функцию для динамического отображения статуса при получении фокуса (игровой момент)
+        window.addEventListener("focus", () => {
+            const msgDiv = document.getElementById("statusMsg");
+            if (msgDiv && msgDiv.innerText.includes("Готово")) {
+                setTimeout(() => {
+                    if (msgDiv) msgDiv.innerHTML = "🌟 Премиум режим активен";
+                    setTimeout(() => {
+                        if (msgDiv && !msgDiv.innerText.includes("Тестовое")) 
+                            msgDiv.innerHTML = "✨ Готов к действию";
+                    }, 1800);
+                }, 600);
+            }
+        });
+        
     </script>
 </body>
 </html>
